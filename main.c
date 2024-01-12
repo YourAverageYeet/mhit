@@ -10,10 +10,20 @@
  */
 
 #include "incl/universal.h"
+#include "incl/mhps.h"
 
 int main(int argc, char* argv[]){
-    for(int i = 0; i < argc; i++){
-        printf("Argument %d: %s\n", i, argv[i]);
+    FILE* spriteFile = fopen(argv[1], "rb");
+    pSpr_t* spriteObject = genSpriteObj(spriteFile);
+    displaySpriteData(spriteObject);
+    int palNum = ((spriteObject->info->palInfo & 0xF0) >> 4) + 1;
+    printf("\nDisplaying all %d sprite colorations...\n\n", palNum);
+    for(int i = 0; i < palNum; i++){
+        spriteToConsole(spriteObject, i);
+        moveCursor(0, spriteObject->sprHeight);
+        moveCursor(2, (spriteObject->sprWidth * 2));
     }
+    cursorLinesDown(spriteObject->sprHeight + 1);
+    destroySpriteObj(spriteObject);
     return 0;
 }

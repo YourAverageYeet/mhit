@@ -54,4 +54,6 @@ dkms.conf
 # Added by Mike Hensley
 build/
 build.sh
+build.bat
 mhit
+.vscode/

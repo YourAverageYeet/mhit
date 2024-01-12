@@ -4,9 +4,13 @@ project(mhit LANGUAGES C)
 
 set(I_BASE_DIR "./incl")
 
-set(C_FILES "main.c")
+set(C_FILES "main.c"
+            "${I_BASE_DIR}/ansi.c"
+            "${I_BASE_DIR}/mhps.c")
 
-set(H_FILES "${I_BASE_DIR}/universal.h")
+set(H_FILES "${I_BASE_DIR}/universal.h"
+            "${I_BASE_DIR}/ansi.h"
+            "${I_BASE_DIR}/mhps.h")
 
 set(ALL_SOURCES ${C_FILES} ${H_FILES})
 
