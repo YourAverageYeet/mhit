@@ -91,9 +91,9 @@ void displaySpriteData(pSpr_t* spriteObj){
             puts("");
         }
         if(!((i + 1) % 3)){
-            printf("0x%2X, ", spriteObj->palData[i]);
+            printf("0x%02X, ", spriteObj->palData[i]);
         } else {
-            printf("0x%2X ", spriteObj->palData[i]);
+            printf("0x%02X ", spriteObj->palData[i]);
         }
     }
 }

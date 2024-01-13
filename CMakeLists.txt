@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.0)
 
 project(mhit LANGUAGES C)
 
-set(I_BASE_DIR "./incl")
+set(I_BASE_DIR "./src/incl")
 
-set(C_FILES "main.c"
+set(C_FILES "./src/main.c"
             "${I_BASE_DIR}/ansi.c"
             "${I_BASE_DIR}/mhps.c")
 

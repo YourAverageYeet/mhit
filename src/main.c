@@ -21,7 +21,7 @@ int main(int argc, char* argv[]){
     for(int i = 0; i < palNum; i++){
         spriteToConsole(spriteObject, i);
         moveCursor(0, spriteObject->sprHeight);
-        moveCursor(2, (spriteObject->sprWidth * 2));
+        moveCursor(2, ((spriteObject->sprWidth * 2) + 2));
     }
     cursorLinesDown(spriteObject->sprHeight + 1);
     destroySpriteObj(spriteObject);
