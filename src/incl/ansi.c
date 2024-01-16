@@ -26,8 +26,7 @@ char* ANSI_TRUECOLOR = "\033[48;2;%" PRId8 ";%" PRId8 ";%" PRId8 "m";
 
 char* ANSI_CUR_BASE = "\033[%d%c";
 
-void setTextColorBase(uint8_t pixColor)
-{
+void setTextColorBase(uint8_t pixColor){
     if(pixColor >= 16){
         fprintf(stderr, "Invalid pixel color %d found in sprite. Exiting...\n",\
                     pixColor);
