@@ -22,15 +22,15 @@
 int main(int argc, char* argv[]){
     FILE* spriteFile = fopen(argv[1], "rb");
     pSpr_t* spriteObject = genSpriteObj(spriteFile);
-    displaySpriteData(spriteObject);
-    int palNum = ((spriteObject->info->palInfo & 0xF0) >> 4) + 1;
-    printf("\nDisplaying all %d sprite colorations...\n\n", palNum);
-    for(int i = 0; i < palNum; i++){
+    displaySpriteData(spriteObject);;
+    printf("\nDisplaying all %d sprite colorations...\n\n",\
+                spriteObject->info->palCount);
+    for(int i = 0; i < spriteObject->info->palCount; i++){
         spriteToConsole(spriteObject, i);
-        moveCursor(0, spriteObject->sprHeight);
-        moveCursor(2, ((spriteObject->sprWidth * 2) + 2));
+        moveCursor(0, spriteObject->info->sprHeight);
+        moveCursor(2, ((spriteObject->info->sprWidth * 2) + 2));
     }
-    cursorLinesDown(spriteObject->sprHeight + 1);
+    cursorLinesDown(spriteObject->info->sprHeight + 1);
     destroySpriteObj(spriteObject);
     return 0;
 }

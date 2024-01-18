@@ -19,11 +19,14 @@ void checkFileSig_mhps(FILE* inputFile){
 sprInfo_t* getSpriteInfo(FILE* inputFile){
     checkFileSig_mhps(inputFile);
     sprInfo_t* newInfo = malloc(sizeof(sprInfo_t));
-    uint8_t infoVals[2] = {0x00, 0x00};
+    uint8_t infoVals[4] = {0x00, 0x00, 0x00, 0x00};
     fseek(inputFile, 4, SEEK_SET);
-    fread(infoVals, 1, 2, inputFile);
+    fread(infoVals, 1, 4, inputFile);
     newInfo->version = infoVals[0];
-    newInfo->palInfo = infoVals[1];
+    newInfo->palCount = ((infoVals[1] & 0xF0) >> 4) + 1;
+    newInfo->palSize = (infoVals[1] & 0x0F) + 1;
+    newInfo->sprWidth = (uint64_t)1 << infoVals[2];
+    newInfo->sprHeight = (uint64_t)1 << infoVals[3];
     return newInfo;
 }
 
@@ -35,22 +38,15 @@ pSpr_t* genSpriteObj(FILE* inputFile){
         exit(0xBAD0B3EC7); // BADOBJECT
     } else {
         newSprite->info = getSpriteInfo(inputFile);
-        fseek(inputFile, 6, SEEK_SET);
-        uint8_t byteBuff[2] = {};
-        fread(&byteBuff, 1, 2, inputFile);
-        newSprite->sprWidth = (uint64_t)1 << byteBuff[0];
-        newSprite->sprHeight = (uint64_t)1 << byteBuff[1];
-        int sprSize = newSprite->sprWidth * newSprite->sprHeight;
-        uint8_t* sprPixels = malloc(sizeof(uint8_t) * sprSize);
         fseek(inputFile, 8, SEEK_SET);
-        fread(sprPixels, 1, sprSize, inputFile);
-        uint8_t palByte = newSprite->info->palInfo;
-        int palSize = (((palByte & 0xF0) >> 4) + 1) * ((palByte & 0x0F) + 1) * 3;
-        uint8_t* palColors = malloc(sizeof(uint8_t) * palSize);
-        fseek(inputFile, (8 + sprSize), SEEK_SET);
-        fread(palColors, 1, palSize, inputFile);
-        newSprite->sprData = sprPixels;
-        newSprite->palData = palColors;
+        uint64_t sprSize = newSprite->info->sprWidth * newSprite->info->sprHeight;
+        uint16_t palSize = newSprite->info->palCount * newSprite->info->palSize;
+        uint8_t* sprDataPtr = malloc(sprSize);
+        uint8_t* palDataPtr = malloc(palSize * 3);
+        fread(sprDataPtr, 1, sprSize, inputFile);
+        fread(palDataPtr, 1, (palSize * 3), inputFile);
+        newSprite->sprData = sprDataPtr;
+        newSprite->palData = palDataPtr;
         return newSprite;
     }
 }
@@ -65,11 +61,11 @@ void destroySpriteObj(pSpr_t* spriteObj){
 void displaySpriteData(pSpr_t* spriteObj){
     printf("\nSprite Version:\t%" PRId8, spriteObj->info->version);
     printf("\n\nSprite Bounds:\t%" PRId64 " by %" PRId64 " pixels",\
-                spriteObj->sprWidth, spriteObj->sprHeight);
+                spriteObj->info->sprWidth, spriteObj->info->sprHeight);
     puts("\nPixel Color Indices:");
-    int spriteSize = spriteObj->sprWidth * spriteObj->sprHeight;
+    int spriteSize = spriteObj->info->sprWidth * spriteObj->info->sprHeight;
     for(int i = 0; i < spriteSize; i++){
-        if(!(i % spriteObj->sprWidth)){
+        if(!(i % spriteObj->info->sprWidth)){
             puts("");
         }
         uint8_t colorIndex = spriteObj->sprData[i];
@@ -79,13 +75,10 @@ void displaySpriteData(pSpr_t* spriteObj){
             printf("%X ", colorIndex);
         }
     }
-    int palCount = ((spriteObj->info->palInfo & 0xF0) >> 4) + 1;
-    int colCount = (spriteObj->info->palInfo & 0x0F) + 1;
-    printf("\n\nThis sprite has %d palettes at %d colors per palette.\n", palCount,\
-                colCount);
+    printf("\n\nThis sprite has %d palettes at %d colors per palette.\n",\
+                spriteObj->info->palCount, spriteObj->info->palSize);
     puts("\nPalette Data:");
-    int totalPalBytes = 3 * (((spriteObj->info->palInfo & 0xF0) >> 4) + 1) *\
-                            ((spriteObj->info->palInfo & 0x0F) + 1);
+    int totalPalBytes = 3 * spriteObj->info->palCount * spriteObj->info->palSize;
     for(int i = 0; i < totalPalBytes; i++){
         if(!(i % 12)){
             puts("");
@@ -99,11 +92,10 @@ void displaySpriteData(pSpr_t* spriteObj){
 }
 
 void spriteToConsole(pSpr_t* spriteObj, int paletteNum){
-    uint8_t colPerPal = (spriteObj->info->palInfo & 0x0F) + 1;
-    uint16_t palOffset = 3 * colPerPal * paletteNum;
-    for(int r = 0; r < spriteObj->sprHeight; r++){
-        for(int c = 0; c < spriteObj->sprWidth; c++){
-            uint64_t pixelOffset = (r * spriteObj->sprWidth) + c;
+    uint16_t palOffset = 3 * spriteObj->info->palSize * paletteNum;
+    for(int r = 0; r < spriteObj->info->sprHeight; r++){
+        for(int c = 0; c < spriteObj->info->sprWidth; c++){
+            uint64_t pixelOffset = (r * spriteObj->info->sprWidth) + c;
             uint8_t pixelColor = spriteObj->sprData[pixelOffset];
             if(pixelColor == 0xFF){
                 ansiTextReset();
@@ -118,6 +110,6 @@ void spriteToConsole(pSpr_t* spriteObj, int paletteNum){
             ansiTextReset();
         }
         moveCursor(1, 1);
-        moveCursor(3, (spriteObj->sprWidth * 2));
+        moveCursor(3, (spriteObj->info->sprWidth * 2));
     }
 }

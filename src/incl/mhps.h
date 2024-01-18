@@ -31,7 +31,10 @@ extern const char consolePixel;
  */
 typedef struct sprInfo_t {
     uint8_t version;    ///< The version of the read sprite.
-    uint8_t palInfo;    ///< The byte holding both palette size and count.
+    uint8_t palCount;   ///< The number of palette for this sprite.
+    uint8_t palSize;    ///< The amount of colors per palette.
+    uint64_t sprWidth;  ///< The width of the sprite.
+    uint64_t sprHeight; ///< The height of the sprite.
 } sprInfo_t;
 
 /**
@@ -39,11 +42,9 @@ typedef struct sprInfo_t {
  * 
  */
 typedef struct pSpr_t {
-    sprInfo_t* info;    ///< A pointer to the information about this sprite
-    uint64_t sprWidth;  ///< The width of the sprite
-    uint64_t sprHeight; ///< The height of the sprite
-    uint8_t* sprData;   ///< The actual pixelmap of the sprite
-    uint8_t* palData;   ///< The actual palette information of the sprite
+    sprInfo_t* info;    ///< A pointer to the information about this sprite.
+    uint8_t* sprData;   ///< The actual pixelmap of the sprite.
+    uint8_t* palData;   ///< The actual palette information of the sprite.
 } pSpr_t;
 
 /**
