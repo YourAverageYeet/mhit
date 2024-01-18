@@ -26,6 +26,12 @@ extern char* ANSI_RESET;
 extern char* ANSI_COLORS[];
 
 /**
+ * @brief A `printf()` compatable version of the 256-color ANSI code.
+ * 
+ */
+extern char* ANSI_HIGHCOLOR;
+
+/**
  * @brief A `printf()` compatable version of the ANSI truecolor code.
  * 
  */
@@ -45,6 +51,13 @@ extern char* ANSI_CUR_BASE;
 void setTextColorBase(uint8_t pixColor);
 
 /**
+ * @brief Set the color of printed text using the ANSI 256-color lookup table.
+ * 
+ * @param picColor The index of the desired color.
+ */
+void setTextColorHigh(uint8_t picColor);
+
+/**
  * @brief Set the color of printed text using red, green and blue components.
  * 
  * @param red The amount of red desired in the color, from 0 to 255.
@@ -57,7 +70,7 @@ void setTextColorTrue(uint8_t red, uint8_t green, uint8_t blue);
  * @brief Resets used ANSI codes to default values.
  * 
  */
-void resetTextColor(void);
+void ansiTextReset(void);
 
 /**
  * @brief Moves the cursor a given number of spaces in a given direction.

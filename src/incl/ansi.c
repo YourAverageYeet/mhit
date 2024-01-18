@@ -40,7 +40,7 @@ void setTextColorTrue(uint8_t red, uint8_t green, uint8_t blue){
     printf(ANSI_TRUECOLOR, red, green, blue);
 }
 
-void resetTextColor(void){
+void ansiTextReset(void){
     printf("%s", ANSI_RESET);
 }
 

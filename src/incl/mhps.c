@@ -106,7 +106,7 @@ void spriteToConsole(pSpr_t* spriteObj, int paletteNum){
             uint64_t pixelOffset = (r * spriteObj->sprWidth) + c;
             uint8_t pixelColor = spriteObj->sprData[pixelOffset];
             if(pixelColor == 0xFF){
-                resetTextColor();
+                ansiTextReset();
                 printf("%2c", consolePixel);
             } else {
                 uint16_t colorOffset = palOffset + (3 * pixelColor);
@@ -115,7 +115,7 @@ void spriteToConsole(pSpr_t* spriteObj, int paletteNum){
                                  spriteObj->palData[colorOffset + 2]);
                 printf("%2c", consolePixel);
             }
-            resetTextColor();
+            ansiTextReset();
         }
         moveCursor(1, 1);
         moveCursor(3, (spriteObj->sprWidth * 2));
