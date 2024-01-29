@@ -13,35 +13,41 @@
 
 #include "universal.h"
 
-/**
- * @brief The ANSI console reset sequence. Used in `reserTextColor()`.
- * 
- */
-extern char* ANSI_RESET;
+#define CUR_UP      0   ///< Direction for use with `moveCursor()`.
+#define CUR_DOWN    1   ///< Direction for use with `moveCursor()`.
+#define CUR_RIGHT   2   ///< Direction for use with `moveCursor()`.
+#define CUR_LEFT    3   ///< Direction for use with `moveCursor()`.
 
 /**
- * @brief The ANSI codes for the base 16 colors supported by most consoles. Used by `setTextColorBase()`.
+ * @brief The ANSI console reset sequence. Used in `resetTextColor()`.
  * 
  */
-extern char* ANSI_COLORS[];
+extern const char* ANSI_RESET;
+
+/**
+ * @brief The ANSI codes for the base 16 colors supported by most consoles. Used
+ * by `setTextColorBase()`.
+ * 
+ */
+extern const char* ANSI_COLORS[];
 
 /**
  * @brief A `printf()` compatable version of the 256-color ANSI code.
  * 
  */
-extern char* ANSI_HIGHCOLOR;
+extern const char* ANSI_HIGHCOLOR;
 
 /**
  * @brief A `printf()` compatable version of the ANSI truecolor code.
  * 
  */
-extern char* ANSI_TRUECOLOR;
+extern const char* ANSI_TRUECOLOR;
 
 /**
  * @brief A `printf()` compatable skeleton of the ANSI character movement codes.
  * 
  */
-extern char* ANSI_CUR_BASE;
+extern const char* ANSI_CUR_BASE;
 
 /**
  * @brief Set the color of printed text using the 16 base colors.
@@ -55,7 +61,7 @@ void setTextColorBase(uint8_t pixColor);
  * 
  * @param picColor The index of the desired color.
  */
-void setTextColorHigh(uint8_t picColor);
+void setTextColorHigh(uint8_t pixColor);
 
 /**
  * @brief Set the color of printed text using red, green and blue components.
@@ -81,14 +87,16 @@ void ansiTextReset(void);
 void moveCursor(uint8_t dir, uint8_t amount);
 
 /**
- * @brief Moves the cursor up a given number of lines, placing the cursor at the start of the line.
+ * @brief Moves the cursor up a given number of lines, placing the cursor at the
+ * start of the line.
  * 
  * @param amount The number of lines to move.
  */
 void cursorLinesUp(int amount);
 
 /**
- * @brief Moves the cursor down a given number of lines, placing the cursor at the start of the line.
+ * @brief Moves the cursor down a given number of lines, placing the cursor at
+ * the start of the line.
  * 
  * @param amount The number of lines to move.
  */

@@ -11,6 +11,18 @@
 
 #include "incl/universal.h"
 #include "incl/mhps.h"
+#include "incl/bmp.h"
+#include "incl/util.h"
+
+const char* modes[] = {
+    "info"
+};
+
+const int modeLen = sizeof(modes) / sizeof(modes[0]);
+
+const char* invalMode = "Invalid mode supplied; use mhit --help to see valid modes. Exiting...\n";
+
+const int EC_invalMode = 0xBADF00D;
 
 /**
  * @brief The `main` function of MHIT
@@ -20,17 +32,25 @@
  * @return int The program return value under normal circumstances
  */
 int main(int argc, char* argv[]){
-    FILE* spriteFile = fopen(argv[1], "rb");
-    pSpr_t* spriteObject = genSpriteObj(spriteFile);
-    displaySpriteData(spriteObject);;
-    printf("\nDisplaying all %d sprite colorations...\n\n",\
-                spriteObject->info->palCount);
-    for(int i = 0; i < spriteObject->info->palCount; i++){
-        spriteToConsole(spriteObject, i);
-        moveCursor(0, spriteObject->info->sprHeight);
-        moveCursor(2, ((spriteObject->info->sprWidth * 2) + 2));
+    int mode = stringWithinArray(argv[1], modes, modeLen);
+    if(mode == -1){
+        errorOut(invalMode, EC_invalMode);
+    } else {
+        switch(mode){
+            case(0):
+                FILE* fileStream = fopen(argv[2], "rb");
+                char* part = strtok(argv[2], ".");
+                char* prev = "";
+                while(part != NULL){
+                    prev = part;
+                    part = strtok(NULL, ".");
+                }
+                spewInfo(fileStream, prev);
+                break;
+            default:
+                errorOut(switchDef, EC_switchDef);
+                break;
+        }
     }
-    cursorLinesDown(spriteObject->info->sprHeight + 1);
-    destroySpriteObj(spriteObject);
     return 0;
 }

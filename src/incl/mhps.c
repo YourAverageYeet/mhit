@@ -1,18 +1,26 @@
 #include "mhps.h"
 #include "universal.h"
 #include "ansi.h"
+#include "bmp.h"
+
+// Variables
 
 const uint8_t mhps_magic[4] = {0x6D, 0x68, 0x70, 0x73};
 
 const char consolePixel = ' ';
+
+const char* mhpsMagic = "File does not contain proper magic number. Exiting...\n";
+
+const int EC_mhpsMagic = 0x5BADF11E; // S(prite) Bad File
+
+// MHPS Functions
 
 void checkFileSig_mhps(FILE* inputFile){
     fseek(inputFile, 0, SEEK_SET);
     uint8_t magic_buff[4] = {};
     fread(&magic_buff, 1, 4, inputFile);
     if(memcmp(magic_buff, mhps_magic, 4)){
-        fprintf(stderr, "File does not contain proper magic number. Exiting...\n");
-        exit(0xBADF11E); // BADFILE
+        errorOut(mhpsMagic, EC_mhpsMagic);
     }
 }
 
@@ -34,8 +42,7 @@ pSpr_t* genSpriteObj(FILE* inputFile){
     checkFileSig_mhps(inputFile);
     pSpr_t* newSprite = malloc(sizeof(pSpr_t));
     if(newSprite == NULL){
-        fprintf(stderr, "genSpriteObj: Not enough memory error. Exiting...\n");
-        exit(0xBAD0B3EC7); // BADOBJECT
+        errorOut(noMem, EC_noMem);
     } else {
         newSprite->info = getSpriteInfo(inputFile);
         fseek(inputFile, 8, SEEK_SET);
@@ -59,7 +66,7 @@ void destroySpriteObj(pSpr_t* spriteObj){
 }
 
 void displaySpriteData(pSpr_t* spriteObj){
-    printf("\nSprite Version:\t%" PRId8, spriteObj->info->version);
+    printf("Sprite Version:\t%" PRId8, spriteObj->info->version);
     printf("\n\nSprite Bounds:\t%" PRId64 " by %" PRId64 " pixels",\
                 spriteObj->info->sprWidth, spriteObj->info->sprHeight);
     puts("\nPixel Color Indices:");
@@ -89,6 +96,7 @@ void displaySpriteData(pSpr_t* spriteObj){
             printf("0x%02X ", spriteObj->palData[i]);
         }
     }
+    puts("");
 }
 
 void spriteToConsole(pSpr_t* spriteObj, int paletteNum){

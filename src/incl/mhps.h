@@ -20,7 +20,8 @@
 extern const uint8_t mhps_magic[4];
 
 /**
- * @brief Just a fancy name for the space character; used in `spriteToConsole()`.
+ * @brief Just a fancy name for the space character; used in
+ * `spriteToConsole()`.
  * 
  */
 extern const char consolePixel;
@@ -46,6 +47,8 @@ typedef struct pSpr_t {
     uint8_t* sprData;   ///< The actual pixelmap of the sprite.
     uint8_t* palData;   ///< The actual palette information of the sprite.
 } pSpr_t;
+
+// MHPS Functions
 
 /**
  * @brief Checks whether the supplied file is a proper MHPS file or not.
@@ -78,7 +81,8 @@ pSpr_t* genSpriteObj(FILE* inputFile);
 void destroySpriteObj(pSpr_t* spriteObj);
 
 /**
- * @brief Prints the sprite's information to the console, among other useful things.
+ * @brief Prints the sprite's information to the console, among other useful
+ * things.
  * 
  * @param spriteObj The sprite object to report to the user.
  */

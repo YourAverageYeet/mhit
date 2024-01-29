@@ -1,9 +1,15 @@
 #include "ansi.h"
 #include "universal.h"
 
-char* ANSI_RESET = "\033[0m";
+// Variables
 
-char* ANSI_COLORS[] = {
+const int EC_invalColor = 0xBADC0102; // Bad color
+
+const char* invalColor = "Invalid pixel color found in sprite. Exiting...\n";
+
+const char* ANSI_RESET = "\033[0m";
+
+const char* ANSI_COLORS[] = {
     "\033[40m",             // Black
     "\033[41m",             // Red
     "\033[42m",             // Green
@@ -22,18 +28,24 @@ char* ANSI_COLORS[] = {
     "\033[107m"              // White
 };
 
-char* ANSI_TRUECOLOR = "\033[48;2;%" PRId8 ";%" PRId8 ";%" PRId8 "m";
+const char* ANSI_HIGHCOLOR = "\033[48;5;%" PRIu8;
 
-char* ANSI_CUR_BASE = "\033[%d%c";
+const char* ANSI_TRUECOLOR = "\033[48;2;%" PRIu8 ";%" PRIu8 ";%" PRIu8 "m";
+
+const char* ANSI_CUR_BASE = "\033[%d%c";
+
+// Functions
 
 void setTextColorBase(uint8_t pixColor){
     if(pixColor >= 16){
-        fprintf(stderr, "Invalid pixel color %d found in sprite. Exiting...\n",\
-                    pixColor);
-        exit(0xBADC0102); // BADCOLOR
+        errorOut(invalColor, EC_invalColor);
     } else {
         printf("%s", ANSI_COLORS[pixColor]);
     }
+}
+
+void setTextColorHigh(uint8_t pixColor){
+    printf(ANSI_HIGHCOLOR, pixColor);
 }
 
 void setTextColorTrue(uint8_t red, uint8_t green, uint8_t blue){

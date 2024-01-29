@@ -59,3 +59,5 @@ mhit
 .vscode/
 doc/
 test-files/
+core/
+hold/
