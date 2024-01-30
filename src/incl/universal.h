@@ -1,3 +1,14 @@
+/**
+ * @file universal.h
+ * @author your name (you@domain.com)
+ * @brief Includes, definitions, variables, and functions accessable to all
+ * files.
+ * @version 0.1
+ * @date 2024-01-29
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 #ifndef UNIVERSAL_H_DEFINED
 #define UNIVERSAL_H_DEFINED
 

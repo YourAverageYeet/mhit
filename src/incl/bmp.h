@@ -1,3 +1,13 @@
+/**
+ * @file bmp.h
+ * @author Mike Hensley (mike2@tamu.edu)
+ * @brief Functions, types, and variables for working with BMP files
+ * @version 0.1
+ * @date 2024-01-28
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 #ifndef BMP_H_INCLUDED
 #define BMP_H_INCLUDED
 
