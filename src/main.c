@@ -15,7 +15,8 @@
 #include "incl/util.h"
 
 const char* modes[] = {
-    "info"
+    "info",
+    "display"
 };
 
 const int modeLen = sizeof(modes) / sizeof(modes[0]);
@@ -23,6 +24,16 @@ const int modeLen = sizeof(modes) / sizeof(modes[0]);
 const char* invalMode = "Invalid mode supplied; use mhit --help to see valid modes. Exiting...\n";
 
 const int EC_invalMode = 0xBADF00D;
+
+char* getFileExtension(char* filePath){
+    char* part = strtok(filePath, ".");
+    char* prev = "";
+    while(part != NULL){
+        prev = part;
+        part = strtok(NULL, ".");
+    }
+    return prev;
+}
 
 /**
  * @brief The `main` function of MHIT
@@ -36,16 +47,18 @@ int main(int argc, char* argv[]){
     if(mode == -1){
         errorOut(invalMode, EC_invalMode);
     } else {
+        FILE* fileStream = NULL;
+        char* ext = NULL;
         switch(mode){
             case(0):
-                FILE* fileStream = fopen(argv[2], "rb");
-                char* part = strtok(argv[2], ".");
-                char* prev = "";
-                while(part != NULL){
-                    prev = part;
-                    part = strtok(NULL, ".");
-                }
-                spewInfo(fileStream, prev);
+                fileStream = fopen(argv[2], "rb");
+                ext = getFileExtension(argv[2]);
+                spewInfo(fileStream, ext);
+                break;
+            case(1):
+                fileStream = fopen(argv[2], "rb");
+                ext = getFileExtension(argv[2]);
+                spriteDisplay(fileStream, ext);
                 break;
             default:
                 errorOut(switchDef, EC_switchDef);

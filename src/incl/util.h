@@ -16,10 +16,16 @@
 #include "bmp.h"
 
 /**
- * @brief Valid Extensions for use with `spewInfo()`.
+ * @brief Valid extensions for use with `spewInfo()`.
  * 
  */
-extern const char* validExts[];
+extern const char* validInfoExts[];
+
+/**
+ * @brief Valid extensions for use with `displaySprite()`.
+ * 
+ */
+extern const char* validDisplyExts[];
 
 /**
  * @brief Prints file information to console. Supports the formats listed in
@@ -29,5 +35,7 @@ extern const char* validExts[];
  * @param extension 
  */
 void spewInfo(FILE* stream, char* extension);
+
+void spriteDisplay(FILE* stream, char* extension);
 
 #endif // UTIL_H_DEFINED
