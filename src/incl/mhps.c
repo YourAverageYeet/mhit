@@ -66,7 +66,7 @@ void destroySpriteObj(pSpr_t* spriteObj){
 }
 
 void displaySpriteData(pSpr_t* spriteObj){
-    printf("Sprite Version:\t%" PRId8, spriteObj->info->version);
+    printf("\nSprite Version:\t%" PRId8, spriteObj->info->version);
     printf("\n\nSprite Bounds:\t%" PRId64 " by %" PRId64 " pixels",\
                 spriteObj->info->sprWidth, spriteObj->info->sprHeight);
     puts("\nPixel Color Indices:");
@@ -85,16 +85,24 @@ void displaySpriteData(pSpr_t* spriteObj){
     printf("\n\nThis sprite has %d palettes at %d colors per palette.\n",\
                 spriteObj->info->palCount, spriteObj->info->palSize);
     puts("\nPalette Data:");
-    int totalPalBytes = 3 * spriteObj->info->palCount * spriteObj->info->palSize;
-    for(int i = 0; i < totalPalBytes; i++){
-        if(!(i % 12)){
-            puts("");
+    for(int i = 0; i < spriteObj->info->palCount; i++){
+        for(int j = 0; j < (3 * spriteObj->info->palSize); j++){
+            int offset = (i * (3 * spriteObj->info->palSize)) + j;
+            if(!((j + 1) % 3)){
+                printf("0x%02X, ", spriteObj->palData[offset]);
+            } else {
+                printf("0x%02X ", spriteObj->palData[offset]);
+            }
         }
-        if(!((i + 1) % 3)){
-            printf("0x%02X, ", spriteObj->palData[i]);
-        } else {
-            printf("0x%02X ", spriteObj->palData[i]);
+        for(int j = 0; j < spriteObj->info->palSize; j++){
+            int offset = (i * spriteObj->info->palSize * 3) + (j * 3);
+            setTextColorTrue(spriteObj->palData[offset],
+                              spriteObj->palData[offset + 1],
+                              spriteObj->palData[offset + 2]);
+            printf("%2c", consolePixel);
         }
+        ansiTextReset();
+        puts("");
     }
     puts("");
 }

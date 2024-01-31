@@ -201,7 +201,7 @@ void destroyRawBMP(bmpRawFile_t* bmp){
 }
 
 void bmpDetailsOut(bmpRawFile_t* bmp){
-    puts("--- BMP Header ---");
+    puts("\n--- BMP Header ---");
     printf("File Size:\t%" PRIu32 " bytes\n", bmp->fileHeader->fileSize);
     printf("Offset to Pixel Data:\t%" PRIu32 " bytes\n",\
         bmp->fileHeader->offToPixels);
@@ -290,5 +290,5 @@ void bmpDetailsOut(bmpRawFile_t* bmp){
         }
     }
     printf("ICC Data Offset:\t%" PRIu32 " bytes\n", bmp->deviceHeader->iccData);
-    printf("ICC Data Size:\t%" PRIu32 " bytes\n", bmp->deviceHeader->iccSize);
+    printf("ICC Data Size:\t%" PRIu32 " bytes\n\n", bmp->deviceHeader->iccSize);
 }
