@@ -9,9 +9,20 @@ const uint8_t mhps_magic[4] = {0x6D, 0x68, 0x70, 0x73};
 
 const char consolePixel = ' ';
 
-const char* mhpsMagic = "File does not contain proper magic number. Exiting...\n";
+const char* mhpsMagic = "File does not contain proper magic number. \
+                            Exiting...\n";
 
 const int EC_mhpsMagic = 0x5BADF11E; // S(prite) Bad File
+
+const char* tooManyColors = "Supplied palettes image has more than 16 colors \
+                            per row. Exiting...";
+
+const int EC_tooManyColors = 0x22C01025; // 22 Colors
+
+const char* tooManyPals = "Supplied palettes image has to many rows. \
+                            Exiting...";
+
+const int EC_tooManyPals = 0x22220BAD; // Too Bad
 
 // MHPS Functions
 
@@ -128,4 +139,112 @@ void spriteToConsole(pSpr_t* spriteObj, int paletteNum){
         moveCursor(1, 1);
         moveCursor(3, (spriteObj->info->sprWidth * 2));
     }
+}
+
+// CONVERSION FUNCTIONS
+
+pSpr_t* rawBMPsToSprite(bmpRawFile_t* skeleton, bmpRawFile_t* palettes){
+    pSpr_t* sprObj = malloc(sizeof(pSpr_t));
+    if(sprObj == NULL){
+        errorOut(noMem, EC_noMem);
+    }
+    sprObj->info = malloc(sizeof(sprInfo_t));
+    if(sprObj->info == NULL){
+        errorOut(noMem, EC_noMem);
+    }
+    sprObj->info->version = 0x00;
+    for(int i = 0; i < 256; i++){
+        uint64_t sVal = (uint64_t)1 << i;
+        if(((uint64_t)1 << i) >= skeleton->deviceHeader->imageWidth){
+            sprObj->info->sprWidth = sVal;
+            break;
+        }
+    }
+    for(int i = 0; i < 256; i++){
+        uint64_t sVal = (uint64_t)1 << i;
+        if(sVal >= skeleton->deviceHeader->imageHeight){
+            sprObj->info->sprHeight = sVal;
+            break;
+        }
+    }
+    if(palettes->deviceHeader->imageWidth > 16){
+        errorOut(tooManyColors, EC_tooManyColors);
+    }
+    sprObj->info->palSize = palettes->deviceHeader->imageWidth;
+    if(palettes->deviceHeader->imageHeight > 16){
+        errorOut(tooManyPals, EC_tooManyPals);
+    }
+    sprObj->info->palCount = palettes->deviceHeader->imageHeight;
+    sprObj->sprData = malloc(sprObj->info->sprWidth * sprObj->info->sprHeight\
+                        * sizeof(uint8_t));
+    if(sprObj->sprData == NULL){
+        errorOut(noMem, EC_noMem);
+    }
+    for(int y = 0; y < skeleton->deviceHeader->imageHeight; y++){
+        int baseSprOffset = y * sprObj->info->sprWidth;
+        int baseBmpOffset = y * skeleton->deviceHeader->imageWidth;
+        for(int x = 0; x < skeleton->deviceHeader->imageWidth; x++){
+            uint32_t color = skeleton->pixelArray[baseBmpOffset + x];
+            if((color & 0xFF000000) == 0xFF000000){
+                uint8_t r = (uint8_t)((color & 0xFF0000) >> 16);
+                uint8_t g = (uint8_t)((color & 0xFF00) >> 8);
+                uint8_t b = (uint8_t)(color & 0xFF);
+                if((r == g) && (g == b)){
+                    sprObj->sprData[baseSprOffset + x] = (r & 0x0F);
+                }
+            } else {
+                sprObj->sprData[baseSprOffset + x] = 0xFF;
+            }
+        }
+    }
+    sprObj->palData = malloc(sprObj->info->palCount * sprObj->info->palSize * 3\
+                                * sizeof(uint8_t));
+    if(sprObj->palData == NULL){
+        errorOut(noMem, EC_noMem);
+    }
+    for(int i = 0; i < (sprObj->info->palCount * sprObj->info->palSize); i++){
+        int palOff = i * 3;
+        uint32_t color = palettes->pixelArray[i];
+        sprObj->palData[palOff] = (uint8_t)((color & 0xFF0000) >> 16);
+        sprObj->palData[palOff + 1] = (uint8_t)((color & 0xFF00) >> 8);
+        sprObj->palData[palOff + 2] = (uint8_t)(color & 0xFF);
+    }
+    destroyRawBMP(skeleton);
+    destroyRawBMP(palettes);
+    return sprObj;
+}
+
+void spriteToFile(pSpr_t* sprite, char* name){
+    int strEnd = strlen(name);
+    name[strEnd] = '.';
+    name[strEnd + 1] = 'm';
+    name[strEnd + 2] = 'h';
+    name[strEnd + 3] = 's';
+    name[strEnd + 4] = '\000';
+    FILE* sprFile = fopen(name, "wb");
+    fwrite(mhps_magic, 1, 4, sprFile);
+    fwrite(&sprite->info->version, 1, 1, sprFile);
+    uint8_t palInfo = (sprite->info->palCount - 1) << 4;
+    palInfo += (sprite->info->palSize - 1);
+    fwrite(&palInfo, 1, 1, sprFile);
+    int shifts = 0;
+    int dim = sprite->info->sprWidth;
+    while(dim != 1){
+        dim >>= 1;
+        shifts++;
+    }
+    fwrite(&shifts, 1, 1, sprFile);
+    shifts = 0;
+    dim = sprite->info->sprHeight;
+    while(dim != 1){
+        dim >>= 1;
+        shifts++;
+    }
+    fwrite(&shifts, 1, 1, sprFile);
+    uint64_t writeBytes = sprite->info->sprWidth * sprite->info->sprHeight;
+    fwrite(sprite->sprData, 1, writeBytes, sprFile);
+    writeBytes = sprite->info->palCount * sprite->info->palSize * 3;
+    fwrite(sprite->palData, 1, writeBytes, sprFile);
+    printf("\nData written to %s\n", name);
+    fclose(sprFile);
 }

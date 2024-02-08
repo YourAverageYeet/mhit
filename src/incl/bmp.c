@@ -64,7 +64,7 @@ bmpHead_t* readBMPHeader(FILE* inputFile){
     checkBMPFile(inputFile);
     bmpHead_t* newHeader = malloc(sizeof(bmpHead_t));
     int headerSize = sizeof(bmpHead_t) / 2;
-    uint16_t* wordBuff = malloc(headerSize);
+    uint16_t* wordBuff = malloc(headerSize * sizeof(uint16_t));
     fseek(inputFile, 0, SEEK_SET);
     fread(wordBuff, sizeof(uint16_t), headerSize, inputFile);
     newHeader->signature[0] = (uint8_t)((wordBuff[0] & 0xFF00) >> 8);
@@ -75,6 +75,7 @@ bmpHead_t* readBMPHeader(FILE* inputFile){
     newHeader->reserved2 = wordBuff[4];
     tmp = ((uint32_t)wordBuff[6] << 16) | wordBuff[5];
     newHeader->offToPixels = tmp;
+    free(wordBuff);
     return newHeader;
 }
 
@@ -96,6 +97,7 @@ triplePoint_t readCIETriple(FILE* inputFile){
     coords.cie_blue.coord_x = colorCoords[6];
     coords.cie_blue.coord_y = colorCoords[7];
     coords.cie_blue.coord_z = colorCoords[8];
+    free(colorCoords);
     return coords;
 }
 
@@ -139,6 +141,7 @@ dibHead_t* readDIBHeader(FILE* inputFile){
     newDIB->iccData = longBuff[4];
     newDIB->iccSize = longBuff[5];
     newDIB->reserved = 0;
+    free(longBuff);
     return newDIB;
 }
 
@@ -154,6 +157,8 @@ bmpRawFile_t* createRawBMP(FILE* inputFile){
             colorLUT[i] = longToColor(cLongs[i]);
         }
         newRaw->colorTable = colorLUT;
+        free(cLongs);
+        free(colorLUT);
     } else {
         newRaw->colorTable = NULL;
     }
@@ -164,22 +169,25 @@ bmpRawFile_t* createRawBMP(FILE* inputFile){
     uint32_t* pix = malloc(sizeof(uint32_t) * pixCount);
     uint32_t* rowBuff = malloc(sizeof(uint32_t) * iW);
     for(int r = (iH - 1); r >= 0; r--){
-        int offset = picOff + (r * iW);
+        int offset = picOff + (r * iW * sizeof(uint32_t));
         fseek(inputFile, offset, SEEK_SET);
         fread(rowBuff, sizeof(uint32_t), iW, inputFile);
         for(int c = 0; c < iW; c++){
-            int pixelOff = picOff + (iW * sizeof(uint32_t));
+            int pixelOff = ((iH - 1 - r) * iW) + c;
             pix[pixelOff] = rowBuff[c];
         }
     }
+    newRaw->pixelArray = pix;
     if(newRaw->deviceHeader->iccData){
         uint8_t* icc = malloc(newRaw->deviceHeader->iccSize);
         fseek(inputFile, (14 + newRaw->deviceHeader->iccData), SEEK_SET);
         fread(icc, 1, newRaw->deviceHeader->iccSize, inputFile);
         newRaw->iccProfile = icc;
+        free(icc);
     } else {
         newRaw->iccProfile = NULL;
     }
+    free(rowBuff);
     return newRaw;
 }
 
@@ -290,5 +298,13 @@ void bmpDetailsOut(bmpRawFile_t* bmp){
         }
     }
     printf("ICC Data Offset:\t%" PRIu32 " bytes\n", bmp->deviceHeader->iccData);
-    printf("ICC Data Size:\t%" PRIu32 " bytes\n\n", bmp->deviceHeader->iccSize);
+    printf("ICC Data Size:\t%" PRIu32 " bytes\n", bmp->deviceHeader->iccSize);
+    puts("\n--- Pixel Data ---");
+    for(int r = 0; r < bmp->deviceHeader->imageHeight; r++){
+        int base = r * bmp->deviceHeader->imageWidth;
+        for(int c = 0; c < bmp->deviceHeader->imageWidth; c++){
+            printf("0x%08" PRIX32 " ", bmp->pixelArray[base + c]);
+        }
+        puts("");
+    }
 }

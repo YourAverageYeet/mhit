@@ -16,7 +16,8 @@
 
 const char* modes[] = {
     "info",
-    "display"
+    "display",
+    "convert"
 };
 
 const int modeLen = sizeof(modes) / sizeof(modes[0]);
@@ -24,6 +25,15 @@ const int modeLen = sizeof(modes) / sizeof(modes[0]);
 const char* invalMode = "Invalid mode supplied; use mhit --help to see valid modes. Exiting...\n";
 
 const int EC_invalMode = 0xBADF00D;
+
+const char* askSave = "Would you like to save this data? [Y/N]\n-> ";
+
+const char* askName1 = "\nPlease enter the path to where you want to save this \
+file.\nPlease limit your path to %d characters.\n-> ";
+
+const char* askName2 = " %[^\n]s";
+
+char savePath[1029];
 
 char* getFileExtension(char* filePath){
     char* part = strtok(filePath, ".");
@@ -51,14 +61,43 @@ int main(int argc, char* argv[]){
         char* ext = NULL;
         switch(mode){
             case(0):
+                checkFileExists(argv[2]);
                 fileStream = fopen(argv[2], "rb");
                 ext = getFileExtension(argv[2]);
                 spewInfo(fileStream, ext);
+                fclose(fileStream);
                 break;
             case(1):
+                checkFileExists(argv[2]);
                 fileStream = fopen(argv[2], "rb");
                 ext = getFileExtension(argv[2]);
                 spriteDisplay(fileStream, ext);
+                fclose(fileStream);
+                break;
+            case(2):
+                checkFileExists(argv[2]);
+                FILE* skelStream = fopen(argv[2], "rb");
+                checkFileExists(argv[3]);
+                FILE* palsStream = fopen(argv[3], "rb");
+                bmpRawFile_t* skel = createRawBMP(skelStream);
+                bmpRawFile_t* pals = createRawBMP(palsStream);
+                pSpr_t* conv = rawBMPsToSprite(skel, pals);
+                fclose(skelStream);
+                fclose(palsStream);
+                puts("\nCreated the following data:");
+                displaySpriteData(conv);
+                printf("%s", askSave);
+                char c = (char)getchar();
+                if(c != 'y' && c != 'Y'){
+                    puts("\nExiting...");
+                    destroySpriteObj(conv);
+                    return 0;
+                }
+                printf(askName1, ((sizeof(savePath) / sizeof(savePath[0])) -\
+                                    5));
+                scanf(askName2, &savePath);
+                spriteToFile(conv, savePath);
+                destroySpriteObj(conv);
                 break;
             default:
                 errorOut(switchDef, EC_switchDef);

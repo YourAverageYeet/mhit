@@ -12,6 +12,7 @@
 #define MHPS_H_INCLUDED
 
 #include "universal.h"
+#include "bmp.h"
 
 /**
  * @brief The magic number for MHPS files; should be a lowercase `mhps`.
@@ -48,7 +49,7 @@ typedef struct pSpr_t {
     uint8_t* palData;   ///< The actual palette information of the sprite.
 } pSpr_t;
 
-// MHPS Functions
+// MHPS FUNCTIONS
 
 /**
  * @brief Checks whether the supplied file is a proper MHPS file or not.
@@ -95,5 +96,18 @@ void displaySpriteData(pSpr_t* spriteObj);
  * @param paletteNum The speific palette to use.
  */
 void spriteToConsole(pSpr_t* spriteObj, int paletteNum);
+
+// CONVERSION FUNCTIONS
+
+/**
+ * @brief Converts a pair of bitmap files into a single sprite file.
+ * 
+ * @param skeleton A monochrome layout of which color in a palette goes where.
+ * @param palettes The colors within the palettes, with one palette per row.
+ * @return pSpr_t* The converted sprite.
+ */
+pSpr_t* rawBMPsToSprite(bmpRawFile_t* skeleton, bmpRawFile_t* palettes);
+
+void spriteToFile(pSpr_t* sprite, char* name);
 
 #endif //MHPS_H_INCLUDED

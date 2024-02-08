@@ -22,6 +22,14 @@
 #include <SDL2/SDL.h>
 #include "ansi.h"
 
+#ifdef _WIN32
+#include <io.h>
+#define F_OK 0
+#define access _access
+#else
+#include <unistd.h>
+#endif
+
 /**
  * @brief String notifying of an out-of-memory error; for use with `errorOut()`.
  * 
@@ -72,5 +80,7 @@ void bitPrint(uint64_t value, int bits);
  * @return int The index of the string if found or `-1` if not found.
  */
 int stringWithinArray(char* str, const char** array, int arrayLength);
+
+void checkFileExists(char* path);
 
 #endif //UNIVERSAL_H_DEFINED

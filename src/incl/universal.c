@@ -8,6 +8,10 @@ const char* switchDef = "Unexpectedswitch default reached. Exiting...\n";
 
 const int EC_switchDef = 0xBADDA1; // Bad day
 
+const char* noFile = "The file \"%s\" does not exist. Exiting...\n";
+
+const int EC_noFile = 0x0BADF11E;
+
 void errorOut(const char* msg, int ec){
     fprintf(stderr, "%s", msg);
     exit(ec);
@@ -34,4 +38,11 @@ int stringWithinArray(char* str, const char** array, int arrayLength){
         }
     }
     return -1;
+}
+
+void checkFileExists(char* path){
+    if(access(path, F_OK)){
+        fprintf(stderr, noFile, path);
+        errorOut("", EC_noFile);
+    }
 }
