@@ -183,7 +183,6 @@ bmpRawFile_t* createRawBMP(FILE* inputFile){
         fseek(inputFile, (14 + newRaw->deviceHeader->iccData), SEEK_SET);
         fread(icc, 1, newRaw->deviceHeader->iccSize, inputFile);
         newRaw->iccProfile = icc;
-        free(icc);
     } else {
         newRaw->iccProfile = NULL;
     }

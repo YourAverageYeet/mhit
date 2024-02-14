@@ -22,7 +22,8 @@ const char* modes[] = {
 
 const int modeLen = sizeof(modes) / sizeof(modes[0]);
 
-const char* invalMode = "Invalid mode supplied; use mhit --help to see valid modes. Exiting...\n";
+const char* invalMode = "Invalid mode supplied; use \"./mhit help\" to see \
+valid modes. Exiting...\n";
 
 const int EC_invalMode = 0xBADF00D;
 

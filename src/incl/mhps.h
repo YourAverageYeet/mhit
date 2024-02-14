@@ -108,6 +108,12 @@ void spriteToConsole(pSpr_t* spriteObj, int paletteNum);
  */
 pSpr_t* rawBMPsToSprite(bmpRawFile_t* skeleton, bmpRawFile_t* palettes);
 
+/**
+ * @brief Writes an in-memory sprite object to a file within storage.
+ * 
+ * @param sprite The sprite to write to the file.
+ * @param name The path of the file to write.
+ */
 void spriteToFile(pSpr_t* sprite, char* name);
 
 #endif //MHPS_H_INCLUDED
