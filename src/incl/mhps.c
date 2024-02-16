@@ -120,24 +120,34 @@ void displaySpriteData(pSpr_t* spriteObj){
 
 void spriteToConsole(pSpr_t* spriteObj, int paletteNum){
     uint16_t palOffset = 3 * spriteObj->info->palSize * paletteNum;
+    uint8_t* rowBuff = malloc(spriteObj->info->sprWidth);
     for(int r = 0; r < spriteObj->info->sprHeight; r++){
+        uint8_t* rowBuff = malloc(spriteObj->info->sprWidth);
         for(int c = 0; c < spriteObj->info->sprWidth; c++){
             uint64_t pixelOffset = (r * spriteObj->info->sprWidth) + c;
             uint8_t pixelColor = spriteObj->sprData[pixelOffset];
-            if(pixelColor == 0xFF){
-                ansiTextReset();
-                printf("%2c", consolePixel);
-            } else {
-                uint16_t colorOffset = palOffset + (3 * pixelColor);
+            rowBuff[c] = pixelColor;
+        }
+        if(checkArrayFull_byte(rowBuff, 0xFF, spriteObj->info->sprWidth)){
+            continue;
+        } else {
+            for(int i = 0; i < spriteObj->info->sprWidth; i++){
+                if(rowBuff[i] == 0xFF){
+                    ansiTextReset();
+                    printf("%2c", consolePixel);
+                    continue;
+                }
+                uint16_t colorOffset = palOffset + (3 * rowBuff[i]);
                 setTextColorTrue(spriteObj->palData[colorOffset],
-                                 spriteObj->palData[colorOffset + 1],
-                                 spriteObj->palData[colorOffset + 2]);
+                                    spriteObj->palData[colorOffset + 1],
+                                    spriteObj->palData[colorOffset + 2]);
                 printf("%2c", consolePixel);
             }
-            ansiTextReset();
         }
-        moveCursor(1, 1);
-        moveCursor(3, (spriteObj->info->sprWidth * 2));
+        ansiTextReset();
+        moveCursor(CUR_DOWN, 1);
+        moveCursor(CUR_LEFT, (spriteObj->info->sprWidth * 2));
+        free(rowBuff);
     }
 }
 

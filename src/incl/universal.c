@@ -46,3 +46,12 @@ void checkFileExists(char* path){
         errorOut("", EC_noFile);
     }
 }
+
+int checkArrayFull_byte(uint8_t* array, uint8_t value, int size){
+    for(int i = 0; i < size; i++){
+        if(array[i] != value){
+            return FALSE;
+        }
+    }
+    return TRUE;
+}

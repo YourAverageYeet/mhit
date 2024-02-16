@@ -81,6 +81,21 @@ void bitPrint(uint64_t value, int bits);
  */
 int stringWithinArray(char* str, const char** array, int arrayLength);
 
+/**
+ * @brief Checks if a files exists.
+ * 
+ * @param path The file to check for.
+ */
 void checkFileExists(char* path);
+
+/**
+ * @brief Checks if a array if completely filled with a single byte.
+ * 
+ * @param array The array to check.
+ * @param value The value to check for.
+ * @param size The size of the submitted array.
+ * @return int If 1, then then `array` is full of bytes equal to `value`.
+ */
+int checkArrayFull_byte(uint8_t* array, uint8_t value, int size);
 
 #endif //UNIVERSAL_H_DEFINED
