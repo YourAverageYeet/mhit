@@ -101,7 +101,7 @@ typedef struct dibHead_t { // BITMAPV5HEADER
 typedef struct bmpRawFile_t {
     bmpHead_t*      fileHeader;     ///< Base file header
     dibHead_t*      deviceHeader;   ///< Device independant header
-    argbColor_t*    colorTable;     ///< Color lookuptable
+    argbColor_t*    colorTable;     ///< Color lookup table
     uint32_t*       pixelArray;     ///< Pixel array
     uint8_t*        iccProfile;     ///< ICC colorspace data
 } bmpRawFile_t;

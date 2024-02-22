@@ -8,9 +8,14 @@ const char* switchDef = "Unexpectedswitch default reached. Exiting...\n";
 
 const int EC_switchDef = 0xBADDA1; // Bad day
 
-const char* noFile = "The file \"%s\" does not exist. Exiting...\n";
+const char* noFile = "The object \"%s\" does not exist. Exiting...\n";
 
 const int EC_noFile = 0x0BADF11E;
+
+const char* notDir = "The supplied path \"%s\" is not a directory. \
+Exiting...\n";
+
+const int EC_notDir = 0xD12BAD;
 
 void errorOut(const char* msg, int ec){
     fprintf(stderr, "%s", msg);
@@ -54,4 +59,16 @@ int checkArrayFull_byte(uint8_t* array, uint8_t value, int size){
         }
     }
     return TRUE;
+}
+
+void checkIfDirectory(char* path){
+    struct stat s;
+    int statOut = stat(path, &s);
+    if(statOut == -1){
+        fprintf(stderr, noFile, path);
+        errorOut("", EC_noFile);
+    }
+    if(!S_ISDIR(s.st_mode)){
+        errorOut(notDir, EC_notDir);
+    }
 }

@@ -15,17 +15,24 @@
 #define TRUE    1
 #define FALSE   0
 
+// Library includes
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
 #include <SDL2/SDL.h>
+#include <sys/stat.h>
+
+// Self-written includes
+
 #include "ansi.h"
 
 #ifdef _WIN32
 #include <io.h>
 #define F_OK 0
 #define access _access
+#define stat _stat
 #else
 #include <unistd.h>
 #endif
@@ -97,5 +104,12 @@ void checkFileExists(char* path);
  * @return int If 1, then then `array` is full of bytes equal to `value`.
  */
 int checkArrayFull_byte(uint8_t* array, uint8_t value, int size);
+
+/**
+ * @brief Check if a given path is a directory.
+ * 
+ * @param path The path to check.
+ */
+void checkIfDirectory(char* path);
 
 #endif //UNIVERSAL_H_DEFINED

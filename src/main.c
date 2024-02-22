@@ -14,10 +14,16 @@
 #include "incl/bmp.h"
 #include "incl/util.h"
 
+#define M_MAJOR_VERSION 0
+#define M_MINOR_VERSION 5
+#define M_PATCH_VERSION 0
+
 const char* modes[] = {
     "info",
     "display",
-    "convert"
+    "convert",
+    "help",
+    "version"
 };
 
 const int modeLen = sizeof(modes) / sizeof(modes[0]);
@@ -99,6 +105,21 @@ int main(int argc, char* argv[]){
                 scanf(askName2, &savePath);
                 spriteToFile(conv, savePath);
                 destroySpriteObj(conv);
+                break;
+            case(3):
+                if(argv[2]){
+                    int hMode = stringWithinArray(argv[2], modes, modeLen);
+                    printf("%s\n", hModeTexts[hMode]);
+                } else {
+                    printf("%s\n", helpText);
+                }
+                break;
+            case(4):
+                printf("\nMHIT Version: %d.%d.%d\n", M_MAJOR_VERSION,\
+                        M_MINOR_VERSION, M_PATCH_VERSION);
+                printf("Compiled with GCC %d.%d.%d\n", __GNUC__,\
+                        __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+                printf("Compiled on %s at %s\n\n", __DATE__, __TIME__);
                 break;
             default:
                 errorOut(switchDef, EC_switchDef);
