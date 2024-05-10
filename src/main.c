@@ -60,6 +60,10 @@ char* getFileExtension(char* filePath){
  * @return int The program return value under normal circumstances
  */
 int main(int argc, char* argv[]){
+    if(argc == 1){
+        printf("%s\n", helpText);
+        return 0;
+    }
     int mode = stringWithinArray(argv[1], modes, modeLen);
     if(mode == -1){
         errorOut(invalMode, EC_invalMode);

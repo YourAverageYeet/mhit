@@ -44,8 +44,8 @@ sprInfo_t* getSpriteInfo(FILE* inputFile){
     newInfo->version = infoVals[0];
     newInfo->palCount = ((infoVals[1] & 0xF0) >> 4) + 1;
     newInfo->palSize = (infoVals[1] & 0x0F) + 1;
-    newInfo->sprWidth = (uint64_t)1 << infoVals[2];
-    newInfo->sprHeight = (uint64_t)1 << infoVals[3];
+    newInfo->sprWidth = 8 * (infoVals[2] + 1);
+    newInfo->sprHeight = 8 * (infoVals[3] + 1);
     return newInfo;
 }
 
@@ -163,20 +163,12 @@ pSpr_t* rawBMPsToSprite(bmpRawFile_t* skeleton, bmpRawFile_t* palettes){
         errorOut(noMem, EC_noMem);
     }
     sprObj->info->version = 0x00;
-    for(int i = 0; i < 256; i++){
-        uint64_t sVal = (uint64_t)1 << i;
-        if(((uint64_t)1 << i) >= skeleton->deviceHeader->imageWidth){
-            sprObj->info->sprWidth = sVal;
-            break;
-        }
-    }
-    for(int i = 0; i < 256; i++){
-        uint64_t sVal = (uint64_t)1 << i;
-        if(sVal >= skeleton->deviceHeader->imageHeight){
-            sprObj->info->sprHeight = sVal;
-            break;
-        }
-    }
+    double sVal = skeleton->deviceHeader->imageHeight / 8;
+    printf("Calculated %lf from %d / 8", sVal, skeleton->deviceHeader->imageHeight);
+    sprObj->info->sprHeight = (uint8_t)ceil(sVal) * 8;
+    sVal = skeleton->deviceHeader->imageWidth / 8;
+    printf("Calculated %lf from %d / 8", sVal, skeleton->deviceHeader->imageWidth);
+    sprObj->info->sprWidth = (uint8_t)ceil(sVal) * 8;
     if(palettes->deviceHeader->imageWidth > 16){
         errorOut(tooManyColors, EC_tooManyColors);
     }
@@ -237,20 +229,10 @@ void spriteToFile(pSpr_t* sprite, char* name){
     uint8_t palInfo = (sprite->info->palCount - 1) << 4;
     palInfo += (sprite->info->palSize - 1);
     fwrite(&palInfo, 1, 1, sprFile);
-    int shifts = 0;
-    int dim = sprite->info->sprWidth;
-    while(dim != 1){
-        dim >>= 1;
-        shifts++;
-    }
-    fwrite(&shifts, 1, 1, sprFile);
-    shifts = 0;
-    dim = sprite->info->sprHeight;
-    while(dim != 1){
-        dim >>= 1;
-        shifts++;
-    }
-    fwrite(&shifts, 1, 1, sprFile);
+    uint8_t size = (sprite->info->sprWidth / 8) - 1;
+    fwrite(&size, 1, 1, sprFile);
+    size = (sprite->info->sprHeight / 8) - 1;
+    fwrite(&size, 1, 1, sprFile);
     uint64_t writeBytes = sprite->info->sprWidth * sprite->info->sprHeight;
     fwrite(sprite->sprData, 1, writeBytes, sprFile);
     writeBytes = sprite->info->palCount * sprite->info->palSize * 3;

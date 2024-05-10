@@ -95,7 +95,7 @@ you for a path relative to the current working directory.\n\n\
 \tUSAGE: ./mhit convert PATH_TO_SKELETON PATH_TO_PALETTES\n"
 
 #define HELP_TEXT_2 "\n\
-Nice try, very funny; use \"help\" for what you're tying to do.\n"
+Nice try, very funny; use \"help\" alone for what you're tying to do.\n"
 
 #define VERSION_INFO "\n\
 \tHelp Text for: VERSION\n\n\
