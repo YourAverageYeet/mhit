@@ -1,6 +1,6 @@
 /**
  * @file util.h
- * @author your name (you@domain.com)
+ * @author Mike Hensley (mike2@tamu.edu)
  * @brief Functions to be called from `main()`.
  * @version 0.1
  * @date 2024-01-29

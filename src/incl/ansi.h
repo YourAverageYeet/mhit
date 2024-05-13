@@ -1,6 +1,6 @@
 /**
  * @file ansi.h
- * @author Mike Hensley (mike2@google.tamu.edu)
+ * @author Mike Hensley (mike2@tamu.edu)
  * @brief Functions utilizing the ANSI control codes
  * @version 0.1
  * @date 2024-01-12

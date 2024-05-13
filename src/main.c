@@ -14,8 +14,10 @@
 #include "incl/bmp.h"
 #include "incl/util.h"
 
+#include "incl/sdl-code/base-sdl.h"
+
 #define M_MAJOR_VERSION 0
-#define M_MINOR_VERSION 5
+#define M_MINOR_VERSION 9
 #define M_PATCH_VERSION 0
 
 const char* modes[] = {
@@ -23,15 +25,26 @@ const char* modes[] = {
     "display",
     "convert",
     "help",
-    "version"
+    "version",
+    "vis_test"
 };
 
 const int modeLen = sizeof(modes) / sizeof(modes[0]);
 
-const char* invalMode = "Invalid mode supplied; use \"./mhit help\" to see \
+const char* invalMode = "Invalid mode supplied. Use \"./mhit help\" to see \
 valid modes. Exiting...\n";
 
-const int EC_invalMode = 0xBADF00D;
+const int EC_invalMode = 0xBADF00D; // Bad Food
+
+const char* noVisTest = "No test supplied to vis_test. Please use \
+\"./mhit help vis_test\" to see valid tests.\n";
+
+const int EC_noVisTest = 0x2E207E57; // Zero Test
+
+const char* invalTest = "Invalid SDL testing mode supplied. Use \
+\"./mhit help vis_test\" to see valid tests.\n";
+
+const int EC_invalTest = 0xBAD7E57; // Bad Test
 
 const char* askSave = "Would you like to save this data? [Y/N]\n-> ";
 
@@ -124,6 +137,49 @@ int main(int argc, char* argv[]){
                 printf("Compiled with GCC %d.%d.%d\n", __GNUC__,\
                         __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
                 printf("Compiled on %s at %s\n\n", __DATE__, __TIME__);
+                break;
+            case(5):
+                puts("Starting SDL...");
+                vis_t* visualizer = generateSDLVisualizer();
+                if(argc != 3){
+                    errorOut(noVisTest, EC_noVisTest);
+                } else {
+                    char* test_str = argv[2];
+                    char test = test_str[0];                    
+                    printf("Running Test: %c\n", test);
+                    int exitVar = 0;
+                    switch(test){
+                        case('A'):
+                            while(!exitVar){
+                                renderTestColor(visualizer);
+                                handleSDLInput(&exitVar);
+                                showScreen(visualizer);
+                                SDL_Delay(16);
+                            }
+                            break;
+                        case('B'):
+                            while(!exitVar){
+                                drawTestBox(visualizer);
+                                handleSDLInput(&exitVar);
+                                showScreen(visualizer);
+                                SDL_Delay(16);
+                            }
+                            break;
+                        case('C'):
+                            while(!exitVar){
+                                drawTestLine(visualizer);
+                                handleSDLInput(&exitVar);
+                                showScreen(visualizer);
+                                SDL_Delay(16);
+                            }
+                            break;
+                        default:
+                            errorOut(invalTest, EC_invalTest);
+                    }
+                }
+                puts("Exiting SDL...");
+                destroySDLVisualizer(visualizer);
+                SDL_Quit();
                 break;
             default:
                 errorOut(switchDef, EC_switchDef);

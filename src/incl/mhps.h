@@ -1,6 +1,6 @@
 /**
  * @file mhps.h
- * @author Mike Hensley (mike2@google.tamu.edu)
+ * @author Mike Hensley (mike2@tamu.edu)
  * @brief Functions, types, and variables for working with MHPS files
  * @version 0.1
  * @date 2024-01-12

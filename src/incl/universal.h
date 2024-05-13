@@ -1,6 +1,6 @@
 /**
  * @file universal.h
- * @author your name (you@domain.com)
+ * @author Mike Hensley (mike2@tamu.edu)
  * @brief Includes, definitions, variables, and functions accessable to all
  * files.
  * @version 0.1
@@ -22,7 +22,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
-#include <SDL2/SDL.h>
 #include <sys/stat.h>
 
 // Self-written includes
