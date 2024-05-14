@@ -33,3 +33,5 @@ void renderTestColor(vis_t* vis);
 void drawTestBox(vis_t* vis);
 
 void drawTestLine(vis_t* vis);
+
+void drawTestPoint(vis_t* vis);

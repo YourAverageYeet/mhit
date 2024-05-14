@@ -85,3 +85,13 @@ void drawTestLine(vis_t* vis){
     uint16_t y1 = rand() % SCR_H;
     SDL_RenderDrawLine(vis->rend, x1, y1, x2, y2);
 }
+
+void drawTestPoint(vis_t* vis){
+    uint8_t r = rand() % 256;
+    uint8_t g = rand() % 256;
+    uint8_t b = rand() % 256;
+    SDL_SetRenderDrawColor(vis->rend, r, g, b, SDL_ALPHA_OPAQUE);
+    uint16_t x = rand() % SCR_W;
+    uint16_t y = rand() % SCR_H;
+    SDL_RenderDrawPoint(vis->rend, x, y);
+}

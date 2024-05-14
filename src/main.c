@@ -22,11 +22,12 @@
 
 const char* modes[] = {
     "info",
-    "display",
+    "cons",
     "convert",
     "help",
     "version",
-    "vis_test"
+    "vis_test",
+    "display"
 };
 
 const int modeLen = sizeof(modes) / sizeof(modes[0]);
@@ -168,6 +169,14 @@ int main(int argc, char* argv[]){
                         case('C'):
                             while(!exitVar){
                                 drawTestLine(visualizer);
+                                handleSDLInput(&exitVar);
+                                showScreen(visualizer);
+                                SDL_Delay(16);
+                            }
+                            break;
+                        case('D'):
+                            while(!exitVar){
+                                drawTestPoint(visualizer);
                                 handleSDLInput(&exitVar);
                                 showScreen(visualizer);
                                 SDL_Delay(16);
