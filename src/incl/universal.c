@@ -4,7 +4,7 @@ const char* noMem = "Not enough memory error. Exiting...\n";
 
 const int EC_noMem = 0x4B1D0DA1; // Forbid day
 
-const char* switchDef = "Unexpectedswitch default reached. Exiting...\n";
+const char* switchDef = "Unexpected switch default reached. Exiting...\n";
 
 const int EC_switchDef = 0xBADDA1; // Bad day
 

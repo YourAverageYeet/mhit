@@ -22,7 +22,6 @@ vis_t* generateSDLVisualizer(void){
         exit(1);
     }
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-    // SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
     vis->rend = SDL_CreateRenderer(vis->wind, -1, rFlags);
     if(vis->rend == NULL){
         printf("SDL_CreateRenderer failure:n\n\t%s\n\n", SDL_GetError());
@@ -52,6 +51,23 @@ void handleSDLInput(int* eVar){
 
 void showScreen(vis_t* vis){
     SDL_RenderPresent(vis->rend);
+}
+
+void placePixel(vis_t* vis, uint16_t x, uint16_t y, uint8_t r, uint8_t g,
+                uint8_t b){
+    SDL_SetRenderDrawColor(vis->rend, r, g, b, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawPoint(vis->rend, x, y);
+}
+
+void drawBlock(vis_t* vis, uint16_t x, uint16_t y, uint16_t w, uint16_t h,
+                uint8_t r, uint8_t g, uint8_t b){
+    SDL_SetRenderDrawColor(vis->rend, r, g, b, SDL_ALPHA_OPAQUE);
+    SDL_Rect block = {0, 0, 0, 0};
+    block.x = x;
+    block.y = y;
+    block.w = w;
+    block.h = h;
+    SDL_RenderFillRect(vis->rend, &block);
 }
 
 // TESTING FUNCTIONS

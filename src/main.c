@@ -15,6 +15,7 @@
 #include "incl/util.h"
 
 #include "incl/sdl-code/base-sdl.h"
+#include "incl/sdl-code/minif.h"
 
 #define M_MAJOR_VERSION 0
 #define M_MINOR_VERSION 9
@@ -177,6 +178,44 @@ int main(int argc, char* argv[]){
                         case('D'):
                             while(!exitVar){
                                 drawTestPoint(visualizer);
+                                handleSDLInput(&exitVar);
+                                showScreen(visualizer);
+                                SDL_Delay(16);
+                            }
+                            break;
+                        case('E'):
+                            objPos_t APos = {0, 0};
+                            objPos_t bPos = {10, 0};
+                            objPos_t Pos3 = {20, 0};
+                            objPos_t ExPos = {30, 0};
+                            objPos_t CoPos = {40, 0};
+                            objPos_t LbPos = {50, 0};
+                            objPos_t LcPos = {60, 0};
+                            objPos_t strPos1 = {1, 11};
+                            objPos_t strPos2 = {1, 21};
+                            objPos_t strPos3 = {1, 31};
+                            objPos_t strPos4 = {1, 41};
+                            objPos_t strPos5 = {1, 51};
+                            objPos_t strPos6 = {1, 61};
+                            objPos_t strPos7 = {1, 71};
+                            while(!exitVar){
+                                SDL_SetRenderDrawColor(visualizer->rend, 0x00,
+                                0x00, 0xFF, SDL_ALPHA_OPAQUE);
+                                SDL_RenderClear(visualizer->rend);
+                                drawMinifCharacter(visualizer, APos, 'A');
+                                drawMinifCharacter(visualizer, bPos, 'b');
+                                drawMinifCharacter(visualizer, Pos3, '3');
+                                drawMinifCharacter(visualizer, ExPos, '!');
+                                drawMinifCharacter(visualizer, CoPos, ':');
+                                drawMinifCharacter(visualizer, LbPos, '[');
+                                drawMinifCharacter(visualizer, LcPos, '{');
+                                minifString(visualizer, strPos1, minifTest1);
+                                minifString(visualizer, strPos2, minifTest2);
+                                minifString(visualizer, strPos3, minifTest3);
+                                minifString(visualizer, strPos4, minifTest4);
+                                minifString(visualizer, strPos5, minifTest5);
+                                minifString(visualizer, strPos6, minifTest6);
+                                minifString(visualizer, strPos7, minifTest7);
                                 handleSDLInput(&exitVar);
                                 showScreen(visualizer);
                                 SDL_Delay(16);

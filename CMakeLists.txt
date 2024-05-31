@@ -6,14 +6,20 @@ find_package(SDL2 REQUIRED)
 
 set(I_BASE_DIR "./src/incl")
 
+set(I_SDL_DIR "./src/incl/sdl-code")
+
 set(I_C_FILES
                   "${I_BASE_DIR}/ansi.c"
                   "${I_BASE_DIR}/bmp.c"
                   "${I_BASE_DIR}/mhps.c"
                   "${I_BASE_DIR}/universal.c"
                   "${I_BASE_DIR}/util.c"
-                  "${I_BASE_DIR}/sdl-code/base-sdl.c"
-   )
+)
+
+set(I_C_FILES_SDL
+                  "${I_SDL_DIR}/base-sdl.c"
+                  "${I_SDL_DIR}/minif.c"
+)
 
 set(I_H_FILES
                   "${I_BASE_DIR}/ansi.h"
@@ -21,12 +27,16 @@ set(I_H_FILES
                   "${I_BASE_DIR}/mhps.h"
                   "${I_BASE_DIR}/universal.h"
                   "${I_BASE_DIR}/util.h"
-                  "${I_BASE_DIR}/sdl-code/base-sdl.h"
-   )
+)
 
-set(SOURCES ${I_C_FILES} ${I_H_FILES})
+set(I_H_FILES_SDL
+                  "${I_SDL_DIR}/base-sdl.h"
+                  "${I_SDL_DIR}/minif.h"
+)
 
-add_executable(mhit ./src/main.c ${SOURCES})
+set(I_SOURCES ${I_C_FILES} ${I_H_FILES} ${I_C_FILES_SDL} ${I_H_FILES_SDL})
+
+add_executable(mhit "./src/main.c" ${I_SOURCES})
 
 target_include_directories(mhit
                               PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/incl"
