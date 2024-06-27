@@ -16,10 +16,11 @@
 
 #include "incl/sdl-code/base-sdl.h"
 #include "incl/sdl-code/minif.h"
+#include "incl/sdl-code/sdl-test.h"
 
 #define M_MAJOR_VERSION 0
 #define M_MINOR_VERSION 9
-#define M_PATCH_VERSION 0
+#define M_PATCH_VERSION 3
 
 const char* modes[] = {
     "info",
@@ -42,11 +43,6 @@ const char* noVisTest = "No test supplied to vis_test. Please use \
 \"./mhit help vis_test\" to see valid tests.\n";
 
 const int EC_noVisTest = 0x2E207E57; // Zero Test
-
-const char* invalTest = "Invalid SDL testing mode supplied. Use \
-\"./mhit help vis_test\" to see valid tests.\n";
-
-const int EC_invalTest = 0xBAD7E57; // Bad Test
 
 const char* askSave = "Would you like to save this data? [Y/N]\n-> ";
 
@@ -149,81 +145,7 @@ int main(int argc, char* argv[]){
                     char* test_str = argv[2];
                     char test = test_str[0];                    
                     printf("Running Test: %c\n", test);
-                    int exitVar = 0;
-                    switch(test){
-                        case('A'):
-                            while(!exitVar){
-                                renderTestColor(visualizer);
-                                handleSDLInput(&exitVar);
-                                showScreen(visualizer);
-                                SDL_Delay(16);
-                            }
-                            break;
-                        case('B'):
-                            while(!exitVar){
-                                drawTestBox(visualizer);
-                                handleSDLInput(&exitVar);
-                                showScreen(visualizer);
-                                SDL_Delay(16);
-                            }
-                            break;
-                        case('C'):
-                            while(!exitVar){
-                                drawTestLine(visualizer);
-                                handleSDLInput(&exitVar);
-                                showScreen(visualizer);
-                                SDL_Delay(16);
-                            }
-                            break;
-                        case('D'):
-                            while(!exitVar){
-                                drawTestPoint(visualizer);
-                                handleSDLInput(&exitVar);
-                                showScreen(visualizer);
-                                SDL_Delay(16);
-                            }
-                            break;
-                        case('E'):
-                            objPos_t APos = {0, 0};
-                            objPos_t bPos = {10, 0};
-                            objPos_t Pos3 = {20, 0};
-                            objPos_t ExPos = {30, 0};
-                            objPos_t CoPos = {40, 0};
-                            objPos_t LbPos = {50, 0};
-                            objPos_t LcPos = {60, 0};
-                            objPos_t strPos1 = {1, 11};
-                            objPos_t strPos2 = {1, 21};
-                            objPos_t strPos3 = {1, 31};
-                            objPos_t strPos4 = {1, 41};
-                            objPos_t strPos5 = {1, 51};
-                            objPos_t strPos6 = {1, 61};
-                            objPos_t strPos7 = {1, 71};
-                            while(!exitVar){
-                                SDL_SetRenderDrawColor(visualizer->rend, 0x00,
-                                0x00, 0xFF, SDL_ALPHA_OPAQUE);
-                                SDL_RenderClear(visualizer->rend);
-                                drawMinifCharacter(visualizer, APos, 'A');
-                                drawMinifCharacter(visualizer, bPos, 'b');
-                                drawMinifCharacter(visualizer, Pos3, '3');
-                                drawMinifCharacter(visualizer, ExPos, '!');
-                                drawMinifCharacter(visualizer, CoPos, ':');
-                                drawMinifCharacter(visualizer, LbPos, '[');
-                                drawMinifCharacter(visualizer, LcPos, '{');
-                                minifString(visualizer, strPos1, minifTest1);
-                                minifString(visualizer, strPos2, minifTest2);
-                                minifString(visualizer, strPos3, minifTest3);
-                                minifString(visualizer, strPos4, minifTest4);
-                                minifString(visualizer, strPos5, minifTest5);
-                                minifString(visualizer, strPos6, minifTest6);
-                                minifString(visualizer, strPos7, minifTest7);
-                                handleSDLInput(&exitVar);
-                                showScreen(visualizer);
-                                SDL_Delay(16);
-                            }
-                            break;
-                        default:
-                            errorOut(invalTest, EC_invalTest);
-                    }
+                    unifiedSDLTest(test, visualizer);
                 }
                 puts("Exiting SDL...");
                 destroySDLVisualizer(visualizer);

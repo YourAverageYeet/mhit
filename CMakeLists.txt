@@ -19,6 +19,7 @@ set(I_C_FILES
 set(I_C_FILES_SDL
                   "${I_SDL_DIR}/base-sdl.c"
                   "${I_SDL_DIR}/minif.c"
+                  "${I_SDL_DIR}/sdl-test.c"
 )
 
 set(I_H_FILES
@@ -32,6 +33,7 @@ set(I_H_FILES
 set(I_H_FILES_SDL
                   "${I_SDL_DIR}/base-sdl.h"
                   "${I_SDL_DIR}/minif.h"
+                  "${I_SDL_DIR}/sdl-test.h"
 )
 
 set(I_SOURCES ${I_C_FILES} ${I_H_FILES} ${I_C_FILES_SDL} ${I_H_FILES_SDL})

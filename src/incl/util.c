@@ -113,7 +113,8 @@ visualizer used by MHIT. It takes one argument out of the following:\n\n\
 \t\"A\" - Displays a salmon-like color throughout the whole window\n\
 \t\"B\" - Draws ramdomly-sized, ramdomly-colored boxes to the display window\n\
 \t\"C\" - Draws randomly-colored lines with random starting and ending points\n\
-\t\"D\" - Draws randomly colored pixels to the window\n\n\
+\t\"D\" - Draws randomly colored pixels to the window\n\
+\t\"E\" - Tests the built-in font Minif\n\n\
 \tUSAGE: ./mhit vis_test TEST_LETTER\n"
 
 #define DISPLAY_HELP "\n\
