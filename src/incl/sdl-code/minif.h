@@ -122,19 +122,19 @@
 
 // Variables
 
-extern char* minifTest1;
+extern char* minifTest1;    ///< Test string 1
 
-extern char* minifTest2;
+extern char* minifTest2;    ///< Test string 2
 
-extern char* minifTest3;
+extern char* minifTest3;    ///< Test string 3
 
-extern char* minifTest4;
+extern char* minifTest4;    ///< Test string 4
 
-extern char* minifTest5;
+extern char* minifTest5;    ///< Test string 5
 
-extern char* minifTest6;
+extern char* minifTest6;    ///< Test string 6
 
-extern char* minifTest7;
+extern char* minifTest7;    ///< Test string 7
 
 // Functions
 

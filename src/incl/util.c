@@ -107,15 +107,15 @@ Compile date and time\n\n\
 \tUSAGE: ./mhit version\n"
 
 #define VIS_TEST_HELP "\n\
-\tHelp Text for: VIS_TEST\n\n\
-\"vis_test\" is used to run one of three small tests for the SDL-based\n\
+\tHelp Text for: VIS-TEST\n\n\
+\"vis-test\" is used to run one of five small tests for the SDL-based\n\
 visualizer used by MHIT. It takes one argument out of the following:\n\n\
 \t\"A\" - Displays a salmon-like color throughout the whole window\n\
 \t\"B\" - Draws ramdomly-sized, ramdomly-colored boxes to the display window\n\
 \t\"C\" - Draws randomly-colored lines with random starting and ending points\n\
 \t\"D\" - Draws randomly colored pixels to the window\n\
 \t\"E\" - Tests the built-in font Minif\n\n\
-\tUSAGE: ./mhit vis_test TEST_LETTER\n"
+\tUSAGE: ./mhit vis-test TEST_LETTER\n"
 
 #define DISPLAY_HELP "\n\
 \tHelp Text for: DISPLAY\n\
@@ -147,7 +147,7 @@ file.\n\
 \t\tcons\t   --\tDraw the image contained within the supplied file.\n\
 \t\tconvert\t   --\tCurrently, this mode only converts two specially formatted \
 BMP files into a single MHS file.\n\
-\t\tvis_test   --\tTests the SDL2-based viewer using one of four tests.\n\
+\t\tvis-test   --\tTests the SDL2-based viewer using one of four tests.\n\
 \t\tdisplay\t   --\tDisplays a sprite through SDL2.\n";
 
 const char* hModeTexts[] = {

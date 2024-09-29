@@ -17,10 +17,11 @@
 #include "incl/sdl-code/base-sdl.h"
 #include "incl/sdl-code/minif.h"
 #include "incl/sdl-code/sdl-test.h"
+#include "incl/sdl-code/disp-mode/mhps-disp.h"
 
 #define M_MAJOR_VERSION 0
 #define M_MINOR_VERSION 9
-#define M_PATCH_VERSION 3
+#define M_PATCH_VERSION 8
 
 const char* modes[] = {
     "info",
@@ -28,7 +29,7 @@ const char* modes[] = {
     "convert",
     "help",
     "version",
-    "vis_test",
+    "vis-test",
     "display"
 };
 
@@ -39,10 +40,14 @@ valid modes. Exiting...\n";
 
 const int EC_invalMode = 0xBADF00D; // Bad Food
 
-const char* noVisTest = "No test supplied to vis_test. Please use \
-\"./mhit help vis_test\" to see valid tests.\n";
+const char* noVisTest = "No test supplied to vis-test. Please use \
+\"./mhit help vis-test\" to see valid tests.\n";
 
 const int EC_noVisTest = 0x2E207E57; // Zero Test
+
+const char* noDispFile = "No file supplied to display. Exiting...\n";
+
+const int EC_noDispFile = 0x2E20F11E; // Zero File
 
 const char* askSave = "Would you like to save this data? [Y/N]\n-> ";
 
@@ -138,18 +143,42 @@ int main(int argc, char* argv[]){
                 break;
             case(5):
                 puts("Starting SDL...");
-                vis_t* visualizer = generateSDLVisualizer();
+                vis_t* vis_test = generateSDLVisualizer();
                 if(argc != 3){
+                    destroySDLVisualizer(vis_test);
                     errorOut(noVisTest, EC_noVisTest);
-                } else {
-                    char* test_str = argv[2];
-                    char test = test_str[0];                    
-                    printf("Running Test: %c\n", test);
-                    unifiedSDLTest(test, visualizer);
+                }
+                char test = argv[2][0];
+                printf("Running Test: %c\n", test);
+                unifiedSDLTest(test, vis_test);
+                puts("Exiting SDL...");
+                destroySDLVisualizer(vis_test);
+                SDL_Quit();
+                break;
+            case(6):
+                puts("Starting SDL...");
+                vis_t* visualizer = generateSDLVisualizer();
+                puts("SDL Started!");
+                if(argc != 3){
+                    destroySDLVisualizer(visualizer);
+                    errorOut(noDispFile, EC_noDispFile);
+                }
+                int exitVar = 0;
+                checkFileExists(argv[2]);
+                FILE* sprFile = fopen(argv[2], "rb");
+                pSpr_t* spr = genSpriteObj(sprFile);
+                objPos_t* sPos = findSprOffsets(spr);
+                while(!exitVar){
+                    drawSpriteSDL(visualizer, spr, 1, sPos);
+                    showScreen(visualizer);
+                    handleSDLInput(&exitVar);
+                    SDL_Delay(16);
                 }
                 puts("Exiting SDL...");
                 destroySDLVisualizer(visualizer);
-                SDL_Quit();
+                free(sPos);
+                destroySpriteObj(spr);
+                fclose(sprFile);
                 break;
             default:
                 errorOut(switchDef, EC_switchDef);

@@ -13,7 +13,7 @@
 #include "sdl-test.h"
 
 const char* invalTest = "Invalid SDL testing mode supplied. Use \
-\"./mhit help vis_test\" to see valid tests.\n";
+\"./mhit help vis-test\" to see valid tests.\n";
 
 const int EC_invalTest = 0xBAD7E57; // Bad Test
 

@@ -1,7 +1,4 @@
-#include <time.h>
-
 #include "base-sdl.h"
-#include "../universal.h"
 
 vis_t* generateSDLVisualizer(void){
     srand(time(NULL));
@@ -21,6 +18,11 @@ vis_t* generateSDLVisualizer(void){
         printf("SDL_CreateWindow failure:n\n\t%s\n\n", SDL_GetError());
         exit(1);
     }
+    SDL_Surface* icn_surf = SDL_CreateRGBSurface(0, gsv_icon.width,
+                            gsv_icon.height, (gsv_icon.bytes_per_pixel * 8),
+                            GIMP_RED, GIMP_GREEN, GIMP_BLUE, GIMP_ALPHA);
+    icn_surf->pixels = gsv_icon.pixel_data;
+    SDL_SetWindowIcon(vis->wind, icn_surf);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
     vis->rend = SDL_CreateRenderer(vis->wind, -1, rFlags);
     if(vis->rend == NULL){
@@ -53,18 +55,17 @@ void showScreen(vis_t* vis){
     SDL_RenderPresent(vis->rend);
 }
 
-void placePixel(vis_t* vis, uint16_t x, uint16_t y, uint8_t r, uint8_t g,
-                uint8_t b){
+void placePixel(vis_t* vis, objPos_t pos, uint8_t r, uint8_t g, uint8_t b){
     SDL_SetRenderDrawColor(vis->rend, r, g, b, SDL_ALPHA_OPAQUE);
-    SDL_RenderDrawPoint(vis->rend, x, y);
+    SDL_RenderDrawPoint(vis->rend, pos.x_pos, pos.y_pos);
 }
 
-void drawBlock(vis_t* vis, uint16_t x, uint16_t y, uint16_t w, uint16_t h,
-                uint8_t r, uint8_t g, uint8_t b){
+void drawBlock(vis_t* vis, objPos_t pos, uint16_t w, uint16_t h, uint8_t r,
+                uint8_t g, uint8_t b){
     SDL_SetRenderDrawColor(vis->rend, r, g, b, SDL_ALPHA_OPAQUE);
     SDL_Rect block = {0, 0, 0, 0};
-    block.x = x;
-    block.y = y;
+    block.x = pos.x_pos;
+    block.y = pos.y_pos;
     block.w = w;
     block.h = h;
     SDL_RenderFillRect(vis->rend, &block);

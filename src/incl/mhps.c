@@ -10,17 +10,17 @@ const uint8_t mhps_magic[4] = {0x6D, 0x68, 0x70, 0x73};
 const char consolePixel = ' ';
 
 const char* mhpsMagic = "File does not contain proper magic number. \
-                            Exiting...\n";
+Exiting...\n";
 
 const int EC_mhpsMagic = 0x5BADF11E; // S(prite) Bad File
 
 const char* tooManyColors = "Supplied palettes image has more than 16 colors \
-                            per row. Exiting...";
+per row. Exiting...";
 
 const int EC_tooManyColors = 0x22C01025; // 22 Colors
 
 const char* tooManyPals = "Supplied palettes image has to many rows. \
-                            Exiting...";
+Exiting...";
 
 const int EC_tooManyPals = 0x22220BAD; // Too Bad
 
