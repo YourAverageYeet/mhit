@@ -1,6 +1,6 @@
 #include "mhps-disp.h"
 
-objPos_t* findSprOffsets(pSpr_t* spr){
+objPos_t* findCenterOffsets(pSpr_t* spr){
     objPos_t* coords = malloc(sizeof(objPos_t));
     double tmpVal = SCR_W - spr->info->sprWidth;
     tmpVal /= 2;
@@ -18,8 +18,8 @@ void drawSpriteSDL(vis_t* vis, pSpr_t* spr, int pal, objPos_t* coords){
     SDL_RenderClear(vis->rend);
     int drawx = coords->x_pos;
     int drawy = coords->y_pos;
-    for(int r = 0; r < spr->info->sprHeight; r++){
-        for(int c = 0; c < spr->info->sprWidth; c++){
+    for(uint64_t r = 0; r < spr->info->sprHeight; r++){
+        for(uint64_t c = 0; c < spr->info->sprWidth; c++){
             int pxoff = (r * spr->info->sprWidth) + c;
             uint8_t color_num = spr->sprData[pxoff];
             if(color_num == 0xFF){

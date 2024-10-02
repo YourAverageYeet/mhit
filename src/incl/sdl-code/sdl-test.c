@@ -21,6 +21,7 @@ void unifiedSDLTest(char testChar, vis_t* vis){
     int exitVar = 0;
     switch(testChar){
         case('A'):
+            printf("Running Test %c...\n", testChar);
             while(!exitVar){
                 renderTestColor(vis);
                 handleSDLInput(&exitVar);
@@ -29,6 +30,7 @@ void unifiedSDLTest(char testChar, vis_t* vis){
             }
             break;
         case('B'):
+            printf("Running Test %c...\n", testChar);
             while(!exitVar){
                 drawTestBox(vis);
                 handleSDLInput(&exitVar);
@@ -37,6 +39,7 @@ void unifiedSDLTest(char testChar, vis_t* vis){
             }
             break;
         case('C'):
+            printf("Running Test %c...\n", testChar);
             while(!exitVar){
                 drawTestLine(vis);
                 handleSDLInput(&exitVar);
@@ -45,6 +48,7 @@ void unifiedSDLTest(char testChar, vis_t* vis){
             }
             break;
         case('D'):
+            printf("Running Test %c...\n", testChar);
             while(!exitVar){
                 drawTestPoint(vis);
                 handleSDLInput(&exitVar);
@@ -53,6 +57,7 @@ void unifiedSDLTest(char testChar, vis_t* vis){
             }
             break;
         case('E'):
+            printf("Running Test %c...\n", testChar);
             objPos_t APos = {0, 0};
             objPos_t bPos = {10, 0};
             objPos_t Pos3 = {20, 0};

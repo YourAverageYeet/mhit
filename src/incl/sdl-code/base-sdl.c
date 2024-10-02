@@ -21,7 +21,12 @@ vis_t* generateSDLVisualizer(void){
     SDL_Surface* icn_surf = SDL_CreateRGBSurface(0, gsv_icon.width,
                             gsv_icon.height, (gsv_icon.bytes_per_pixel * 8),
                             GIMP_RED, GIMP_GREEN, GIMP_BLUE, GIMP_ALPHA);
-    icn_surf->pixels = gsv_icon.pixel_data;
+    unsigned char pixels[16384] = {0};
+    for(int i = 0; i < 5; i++){
+        memcpy((pixels + gsv_icon.block_offsets[i]),
+            gsv_icon.pixel_data_blocks[i], gsv_icon.block_sizes[i]);
+    }
+    icn_surf->pixels = pixels;
     SDL_SetWindowIcon(vis->wind, icn_surf);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
     vis->rend = SDL_CreateRenderer(vis->wind, -1, rFlags);

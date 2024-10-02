@@ -28,6 +28,8 @@
 
 #include "ansi.h"
 
+// Funny business
+
 #ifdef _WIN32
 #include <io.h>
 #define F_OK 0

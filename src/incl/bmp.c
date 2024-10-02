@@ -5,7 +5,8 @@
 
 const char* notBMP = "Input is not a BMP file. Exiting...\n";
 
-const char* noBMPV5 = "Bitmap does not contain a BITMAPV5HEADER-style DIB header. Exiting...\n";
+const char* noBMPV5 = "Bitmap does not contain a BITMAPV5HEADER-style\
+ DIB header. Exiting...\n";
 
 const int EC_notBMP = 0xBBADF11E; // B(MP) Bad File
 
@@ -80,7 +81,11 @@ bmpHead_t* readBMPHeader(FILE* inputFile){
 }
 
 triplePoint_t readCIETriple(FILE* inputFile){
-    fpos_t position = {};
+    #ifndef _WIN32
+    fpos_t position = {0, {0, {0}}};    // *NIX
+    #else
+    fpos_t position = 0;                // Windows
+    #endif
     fgetpos(inputFile, &position);
     if(position.__pos != (14 + (15 * 4))){
         fseek(inputFile, (14 + (15 * 4)), SEEK_SET);
@@ -102,7 +107,11 @@ triplePoint_t readCIETriple(FILE* inputFile){
 }
 
 dibHead_t* readDIBHeader(FILE* inputFile){
-    fpos_t position = {};
+    #ifndef _WIN32
+    fpos_t position = {0, {0, {0}}};    // *NIX
+    #else
+    fpos_t position = 0;                // Windows
+    #endif
     fgetpos(inputFile, &position);
     if(position.__pos != 14){
         fseek(inputFile, 14, SEEK_SET);
@@ -148,24 +157,31 @@ dibHead_t* readDIBHeader(FILE* inputFile){
 bmpRawFile_t* createRawBMP(FILE* inputFile){
     bmpRawFile_t* newRaw = malloc(sizeof(bmpRawFile_t));
     newRaw->fileHeader = readBMPHeader(inputFile);
+    puts("Created BMP Header");
     newRaw->deviceHeader = readDIBHeader(inputFile);
+    puts("Created DIB Header");
     uint32_t colors = newRaw->deviceHeader->colorTableSize;
+    printf("Read %d colors...\t\t", colors);
     if(colors){
         uint32_t* cLongs = malloc(sizeof(uint32_t) * colors);
         argbColor_t* colorLUT = malloc(sizeof(argbColor_t) * colors);
-        for(int i = 0; i < colors; i++){
+        for(uint32_t i = 0; i < colors; i++){
             colorLUT[i] = longToColor(cLongs[i]);
         }
         newRaw->colorTable = colorLUT;
         free(cLongs);
         free(colorLUT);
+        puts("Saved");
     } else {
         newRaw->colorTable = NULL;
+        puts("Ignored");
     }
     int32_t iW = newRaw->deviceHeader->imageWidth;
     int32_t iH = newRaw->deviceHeader->imageHeight;
     uint32_t picOff = newRaw->fileHeader->offToPixels;
     uint64_t pixCount = iW * iH;
+    printf("Width: %" PRId32"\tHeight: %" PRId32 "\tOffset: %" PRId32\
+        "\tPixel Count: %" PRIu64 "\n", iW, iH, picOff, pixCount);
     uint32_t* pix = malloc(sizeof(uint32_t) * pixCount);
     uint32_t* rowBuff = malloc(sizeof(uint32_t) * iW);
     for(int r = (iH - 1); r >= 0; r--){
@@ -178,15 +194,19 @@ bmpRawFile_t* createRawBMP(FILE* inputFile){
         }
     }
     newRaw->pixelArray = pix;
+    puts("Pixels Saved");
     if(newRaw->deviceHeader->iccData){
         uint8_t* icc = malloc(newRaw->deviceHeader->iccSize);
         fseek(inputFile, (14 + newRaw->deviceHeader->iccData), SEEK_SET);
         fread(icc, 1, newRaw->deviceHeader->iccSize, inputFile);
         newRaw->iccProfile = icc;
+        puts("ICC Data Saved");
     } else {
         newRaw->iccProfile = NULL;
+        puts("ICC Data Ignored");
     }
     free(rowBuff);
+    puts("In-memory BMP Created\n");
     return newRaw;
 }
 

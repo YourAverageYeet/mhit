@@ -21,6 +21,7 @@ set(I_C_FILES_SDL
                   "${I_SDL_DIR}/minif.c"
                   "${I_SDL_DIR}/sdl-test.c"
                   "${I_SDL_DIR}/disp-mode/mhps-disp.c"
+                  "${I_SDL_DIR}/gsv-blocks.c"
 )
 
 set(I_H_FILES
@@ -36,6 +37,7 @@ set(I_H_FILES_SDL
                   "${I_SDL_DIR}/minif.h"
                   "${I_SDL_DIR}/sdl-test.h"
                   "${I_SDL_DIR}/disp-mode/mhps-disp.h"
+                  "${I_SDL_DIR}/gsv-blocks.h"
 )
 
 set(I_SOURCES ${I_C_FILES} ${I_H_FILES} ${I_C_FILES_SDL} ${I_H_FILES_SDL})
@@ -48,5 +50,7 @@ target_include_directories(mhit
                           )
 
 target_link_libraries(mhit m ${SDL2_LIBRARIES})
+
+target_compile_options(mhit PRIVATE -Wall -Wextra -Wpedantic)
 
 install(TARGETS mhit RUNTIME DESTINATION bin)

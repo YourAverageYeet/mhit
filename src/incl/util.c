@@ -30,11 +30,13 @@ void spewInfo(FILE* stream, char* extension){
     }
     switch(extNum){
         case(0):
+            puts("MH Paletted Sprite File");
             pSpr_t* spr = genSpriteObj(stream);
             displaySpriteData(spr);
             destroySpriteObj(spr);
             break;
         case(1):
+            puts("Windows Bitmap File");
             bmpRawFile_t* bmp = createRawBMP(stream);
             bmpDetailsOut(bmp);
             destroyRawBMP(bmp);
@@ -51,6 +53,7 @@ void spriteDisplay(FILE* stream, char* extension){
     }
     switch(extNum){
         case(0):
+            puts("MH Paletted Sprite File");
             int palNum = 0;
             pSpr_t* spr = genSpriteObj(stream);
             printf("Please pick a number between 1 and %d\t-> ",\

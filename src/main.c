@@ -19,9 +19,9 @@
 #include "incl/sdl-code/sdl-test.h"
 #include "incl/sdl-code/disp-mode/mhps-disp.h"
 
-#define M_MAJOR_VERSION 0
-#define M_MINOR_VERSION 9
-#define M_PATCH_VERSION 8
+#define M_MAJOR_VERSION 1
+#define M_MINOR_VERSION 0
+#define M_PATCH_VERSION 0
 
 const char* modes[] = {
     "info",
@@ -167,7 +167,7 @@ int main(int argc, char* argv[]){
                 checkFileExists(argv[2]);
                 FILE* sprFile = fopen(argv[2], "rb");
                 pSpr_t* spr = genSpriteObj(sprFile);
-                objPos_t* sPos = findSprOffsets(spr);
+                objPos_t* sPos = findCenterOffsets(spr);
                 while(!exitVar){
                     drawSpriteSDL(visualizer, spr, 1, sPos);
                     showScreen(visualizer);
