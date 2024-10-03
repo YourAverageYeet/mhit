@@ -163,22 +163,10 @@ int main(int argc, char* argv[]){
                     destroySDLVisualizer(visualizer);
                     errorOut(noDispFile, EC_noDispFile);
                 }
-                int exitVar = 0;
                 checkFileExists(argv[2]);
-                FILE* sprFile = fopen(argv[2], "rb");
-                pSpr_t* spr = genSpriteObj(sprFile);
-                objPos_t* sPos = findCenterOffsets(spr);
-                while(!exitVar){
-                    drawSpriteSDL(visualizer, spr, 1, sPos);
-                    showScreen(visualizer);
-                    handleSDLInput(&exitVar);
-                    SDL_Delay(16);
-                }
+                displayMHPS(visualizer, argv[2]);
                 puts("Exiting SDL...");
                 destroySDLVisualizer(visualizer);
-                free(sPos);
-                destroySpriteObj(spr);
-                fclose(sprFile);
                 break;
             default:
                 errorOut(switchDef, EC_switchDef);

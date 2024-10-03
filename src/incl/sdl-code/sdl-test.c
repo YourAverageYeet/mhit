@@ -24,7 +24,7 @@ void unifiedSDLTest(char testChar, vis_t* vis){
             printf("Running Test %c...\n", testChar);
             while(!exitVar){
                 renderTestColor(vis);
-                handleSDLInput(&exitVar);
+                checkSDLExit(&exitVar);
                 showScreen(vis);
                 SDL_Delay(16);
             }
@@ -33,7 +33,7 @@ void unifiedSDLTest(char testChar, vis_t* vis){
             printf("Running Test %c...\n", testChar);
             while(!exitVar){
                 drawTestBox(vis);
-                handleSDLInput(&exitVar);
+                checkSDLExit(&exitVar);
                 showScreen(vis);
                 SDL_Delay(16);
             }
@@ -42,7 +42,7 @@ void unifiedSDLTest(char testChar, vis_t* vis){
             printf("Running Test %c...\n", testChar);
             while(!exitVar){
                 drawTestLine(vis);
-                handleSDLInput(&exitVar);
+                checkSDLExit(&exitVar);
                 showScreen(vis);
                 SDL_Delay(16);
             }
@@ -51,7 +51,7 @@ void unifiedSDLTest(char testChar, vis_t* vis){
             printf("Running Test %c...\n", testChar);
             while(!exitVar){
                 drawTestPoint(vis);
-                handleSDLInput(&exitVar);
+                checkSDLExit(&exitVar);
                 showScreen(vis);
                 SDL_Delay(16);
             }
@@ -90,7 +90,7 @@ void unifiedSDLTest(char testChar, vis_t* vis){
                 minifString(vis, strPos5, minifTest5);
                 minifString(vis, strPos6, minifTest6);
                 minifString(vis, strPos7, minifTest7);
-                handleSDLInput(&exitVar);
+                checkSDLExit(&exitVar);
                 showScreen(vis);
                 SDL_Delay(16);
             }

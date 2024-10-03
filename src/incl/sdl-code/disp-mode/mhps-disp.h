@@ -9,11 +9,12 @@
  * 
  */
 
-#ifndef DISP_BASE_INCLUDED
-#define DISP_BASE_INCLUDED
+#ifndef MHPS_DISP_INCLUDED
+#define MHPS_DISP_INCLUDED
 
 #include "../base-sdl.h"
 #include "../../mhps.h"
+#include "../minif.h"
 
 /**
  * @brief Finds the offests with which to display a sprite to center it within a
@@ -32,6 +33,8 @@ objPos_t* findCenterOffsets(pSpr_t* spr);
  * @param pal The palette to use when drawing the sprite.
  * @param coords The coordinates at which to place the sprite's top-left corner.
  */
-void drawSpriteSDL(vis_t* vis, pSpr_t* spr, int pal, objPos_t* coords);
+void drawSpriteSDL(vis_t* vis, pSpr_t* spr, int pal, int scale, objPos_t* coords);
 
-#endif // DISP_BASE_INCLUDED
+void displayMHPS(vis_t* vis, char* sprPath);
+
+#endif // MHPS_DISP_INCLUDED

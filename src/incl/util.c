@@ -125,14 +125,16 @@ visualizer used by MHIT. It takes one argument out of the following:\n\n\
 \'display,\" obviously, displays a sprite. Compared to \"cons,\" which uses\n\
 ANSI and a compatable console, \"display\" uses SDL2 and opens a slightly\n\
 interactive window. The controls for the window are as follows:\n\
-\t\"q\" - Quit displaying sprite and exit program\n\
-\t\"4\" - Shift sprite left by one unit\n\
-\t\"6\" - Shift sprite right by one unit\n\
-\t\"8\" - Shift sprite up by one unit\n\
-\t\"2\" - Shift sprite down by one unit\n\
-\t\"+\" - Increase zoom / scale factor\n\
-\t\"-\" - Decrease zoom / scale factor\n\
-\t\"0\" - Reset sprite display\n\n\
+\t\" ESC \" - Quit displaying sprite and exit program\n\
+\t\" LEFT\" - Shift sprite left by one unit\n\
+\t\"RIGHT\" - Shift sprite right by one unit\n\
+\t\"  UP \" - Shift sprite up by one unit\n\
+\t\" DOWN\" - Shift sprite down by one unit\n\
+\t\"  ]  \" - Increment palette number\n\
+\t\"  [  \" - Decrement palette number\n\
+\t\"  .  \" - Increase sprite scale\n\
+\t\"  ,  \" - Decrease sprite scale\n\
+\t\" TAB \" - Reset sprite display\n\n\
 \tUSAGE: ./mhit display PATH_TO_FILE"
 
 // Help Text Variables

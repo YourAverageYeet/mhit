@@ -88,6 +88,8 @@ void displaySpriteData(pSpr_t* spriteObj){
         uint8_t colorIndex = spriteObj->sprData[i];
         if(colorIndex == 0xFF){
             printf("%c ", ' ');
+        } else if(colorIndex == 0xFE){
+            printf("%c ", '#');
         } else {
             printf("%X ", colorIndex);
         }
@@ -188,13 +190,21 @@ pSpr_t* rawBMPsToSprite(bmpRawFile_t* skeleton, bmpRawFile_t* palettes){
     uint64_t sprArea = (uint64_t)sprObj->info->sprWidth *\
         (uint64_t)sprObj->info->sprHeight;
     for(uint64_t i = 0; i < sprArea; i++){
-        sprObj->sprData[i] = 0xFF;
+        sprObj->sprData[i] = 0xFE;
     }
-    for(int y = 0; y < skeleton->deviceHeader->imageHeight; y++){
+    double diff_x = (double)sprObj->info->sprWidth -\
+        (double)skeleton->deviceHeader->imageWidth;
+    uint8_t off_x = (uint8_t)floor(diff_x / 2);
+    double diff_y = (double)sprObj->info->sprHeight -\
+        (double)skeleton->deviceHeader->imageHeight;
+    uint8_t off_y = (uint8_t)ceil(diff_y / 2);
+    printf("Offsets into sprite area:\n\tRows: %" PRIu8 "\tColumns: %" PRIu8\
+        "\n", off_y, off_x);
+    for(int y = off_y; y < skeleton->deviceHeader->imageHeight + off_y; y++){
         int baseSprOffset = y * sprObj->info->sprWidth;
-        int baseBmpOffset = y * skeleton->deviceHeader->imageWidth;
-        for(int x = 0; x < skeleton->deviceHeader->imageWidth; x++){
-            uint32_t color = skeleton->pixelArray[baseBmpOffset + x];
+        int baseBmpOffset = (y - off_y) * skeleton->deviceHeader->imageWidth;
+        for(int x = off_x; x < skeleton->deviceHeader->imageWidth + off_x; x++){
+            uint32_t color = skeleton->pixelArray[baseBmpOffset + x - off_x];
             if(((color & 0xFF000000) == 0xFF000000)){
                 uint8_t r = (uint8_t)((color & 0xFF0000) >> 16);
                 uint8_t g = (uint8_t)((color & 0xFF00) >> 8);
@@ -203,7 +213,7 @@ pSpr_t* rawBMPsToSprite(bmpRawFile_t* skeleton, bmpRawFile_t* palettes){
                     sprObj->sprData[baseSprOffset + x] = (r & 0x0F);
                 }
             } else {
-                continue;
+                sprObj->sprData[baseSprOffset + x] = 0xFF;
             }
         }
     }
@@ -229,6 +239,12 @@ pSpr_t* rawBMPsToSprite(bmpRawFile_t* skeleton, bmpRawFile_t* palettes){
 }
 
 void spriteToFile(pSpr_t* sprite, char* name){
+    uint64_t sprArea = sprite->info->sprWidth * sprite->info->sprHeight;
+    for(uint64_t p = 0; p < sprArea; p++){
+        if(sprite->sprData[p] == 0xFE){
+            sprite->sprData[p] = 0xFF;
+        }
+    }
     char lastFour[5] = {0, 0, 0, 0, 0};
     int strEnd = strlen(name);
     lastFour[3] = name[strEnd-1];

@@ -71,7 +71,7 @@ void destroySDLVisualizer(vis_t* vis);
  * 
  * @param eVar the variable to track for an "exit" condition.
  */
-void handleSDLInput(int* eVar);
+void checkSDLExit(int* eVar);
 
 /**
  * @brief Small wrapper function to `SDL_RenderPresent`.

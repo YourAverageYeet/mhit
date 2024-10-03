@@ -43,7 +43,7 @@ void destroySDLVisualizer(vis_t* vis){
     free(vis);
 }
 
-void handleSDLInput(int* eVar){
+void checkSDLExit(int* eVar){
         SDL_Event event;
         while(SDL_PollEvent(&event)){
             switch(event.type){
