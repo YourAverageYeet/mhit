@@ -11,11 +11,34 @@
 #ifndef BMP_H_INCLUDED
 #define BMP_H_INCLUDED
 
-#define STYLE_SRGB          0x73524742  ///< Color space code for "sRGB"
-#define STYLE_WINDOWS       0x57696E20  ///< Color space code for "Win "
-#define STYLE_CALIBRATED    0x00000000  ///< Color space code for "\0\0\0\0"
-#define STYLE_LINKED        0x4C494E4B  ///< Color space code for "LINK"
-#define STYLE_EMBEDED       0x4D424544  ///< Color space code for "MBED"
+// Color space codes
+
+#define SPACE_SRGB          0x73524742  ///< Color space code for "sRGB"
+#define SPACE_WINDOWS       0x57696E20  ///< Color space code for "Win "
+#define SPACE_CALIBRATED    0x00000000  ///< Color space code for "\0\0\0\0"
+#define SPACE_LINKED        0x4C494E4B  ///< Color space code for "LINK"
+#define SPACE_EMBEDED       0x4D424544  ///< Color space code for "MBED"
+
+// Compression codes
+
+enum {
+    BI_RGB,
+    BI_RLE8,
+    BI_RLE4,
+    BI_BITFIELDS,
+    BI_JPEG,
+    BI_PNG,
+    BI_CMYK = 0x0B,
+    BI_CMYKRLE8,
+    BI_CMYKRLE4
+};
+
+// Render intent codes
+
+#define LCS_GM_BUSINESS         1
+#define LCS_GM_GRAPHICS         2
+#define LCS_GM_IMAGES           4
+#define LCS_GM_ABS_COLORIMETRIC 8
 
 #include "universal.h"
 
@@ -166,10 +189,10 @@ bmpRawFile_t* createRawBMP(FILE* inputFile);
  * @brief Checks if a given BMP is in the supplied colorspace.
  * 
  * @param rawBMP In-memory bitmap to check.
- * @param style Colorspace to check for
+ * @param space Colorspace to check for
  * @return int `1` on success, `0` otherwise.
  */
-int checkBMPColorSpace(bmpRawFile_t* rawBMP, uint32_t style);
+int checkBMPColorSpace(bmpRawFile_t* rawBMP, uint32_t space);
 
 /**
  * @brief Frees the memory used by an in-memory BMP file.
@@ -184,5 +207,19 @@ void destroyRawBMP(bmpRawFile_t* bmp);
  * @param bmp BMP to use.
  */
 void bmpDetailsOut(bmpRawFile_t* bmp);
+
+/**
+ * @brief Generates an base, empty in-memory BMP file.
+ * 
+ * @return bmpRawFile_t* Pointer to the generated in-memory file.
+ */
+bmpRawFile_t* genEmptyRawBMP(void);
+
+/**
+ * @brief Saves an in-memory BMP file to an on-disk file.
+ * 
+ * @param bmp The in-memory file to save to disk.
+ */
+void saveBMPFile(bmpRawFile_t* bmp, char* name);
 
 #endif // BMP_H_INCLUDED

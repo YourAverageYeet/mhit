@@ -62,6 +62,7 @@ void displayMHPS(vis_t* vis, char* sprPath){
     objPos_t posStrPos = {2, 10};
     objPos_t palStrPos = {2, 18};
     objPos_t scaleStrPos = {2, 26};
+    uint8_t minifScale = 1;
     while(!exitVar){
         SDL_SetRenderDrawColor(vis->rend, 0x45, 0x45, 0x45, SDL_ALPHA_OPAQUE);
         SDL_RenderClear(vis->rend);
@@ -71,10 +72,10 @@ void displayMHPS(vis_t* vis, char* sprPath){
         sprintf(palStr, "Palette Number: %d of %d", (pal + 1),\
             mhs->info->palCount);
         sprintf(scaleStr, "Sprite Scale: %dx", scale);
-        minifString(vis, nameStrPos, nameStr);
-        minifString(vis, posStrPos, posStr);
-        minifString(vis, palStrPos, palStr);
-        minifString(vis, scaleStrPos, scaleStr);
+        minifString(vis, nameStrPos, nameStr, minifScale);
+        minifString(vis, posStrPos, posStr, minifScale);
+        minifString(vis, palStrPos, palStr, minifScale);
+        minifString(vis, scaleStrPos, scaleStr, minifScale);
         showScreen(vis);
         while(SDL_PollEvent(&event)){
             if(event.type == SDL_KEYDOWN){
@@ -126,6 +127,32 @@ void displayMHPS(vis_t* vis, char* sprPath){
                             scale >>= 1;
                         }
                         break;
+                    case(SDLK_SEMICOLON):
+                        if(minifScale > 1){
+                            minifScale--;
+                            nameStrPos.x_pos = 2 * minifScale;
+                            nameStrPos.y_pos = 2 * minifScale;
+                            posStrPos.x_pos = 2 * minifScale;
+                            posStrPos.y_pos = 10 * minifScale;
+                            palStrPos.x_pos = 2 * minifScale;
+                            palStrPos.y_pos = 18 * minifScale;
+                            scaleStrPos.x_pos = 2 * minifScale;
+                            scaleStrPos.y_pos = 26 * minifScale;
+                        }
+                        break;
+                    case(SDLK_QUOTE):
+                        if(minifScale < 4){
+                            minifScale++;
+                            nameStrPos.x_pos = 2 * minifScale;
+                            nameStrPos.y_pos = 2 * minifScale;
+                            posStrPos.x_pos = 2 * minifScale;
+                            posStrPos.y_pos = 10 * minifScale;
+                            palStrPos.x_pos = 2 * minifScale;
+                            palStrPos.y_pos = 18 * minifScale;
+                            scaleStrPos.x_pos = 2 * minifScale;
+                            scaleStrPos.y_pos = 26 * minifScale;
+                        }
+                        break;
                 }
             } else if(event.type == SDL_QUIT){
                 exitVar++;
@@ -136,4 +163,8 @@ void displayMHPS(vis_t* vis, char* sprPath){
     destroySpriteObj(mhs);
     fclose(sprFile);
     free(sPos);
+    free(nameStr);
+    free(posStr);
+    free(palStr);
+    free(scaleStr);
 }

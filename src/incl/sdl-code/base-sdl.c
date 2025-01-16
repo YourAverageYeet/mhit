@@ -26,8 +26,9 @@ vis_t* generateSDLVisualizer(void){
         memcpy((pixels + gsv_icon.block_offsets[i]),
             gsv_icon.pixel_data_blocks[i], gsv_icon.block_sizes[i]);
     }
-    icn_surf->pixels = pixels;
+    memcpy(icn_surf->pixels, pixels, 16384);
     SDL_SetWindowIcon(vis->wind, icn_surf);
+    SDL_FreeSurface(icn_surf);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
     vis->rend = SDL_CreateRenderer(vis->wind, -1, rFlags);
     if(vis->rend == NULL){

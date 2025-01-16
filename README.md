@@ -15,13 +15,13 @@ mode, the standard help text is printed as if the user had run `./mhit help`.
 Below are the currently accepted modes for use with MHIT, followed by a small
 description:
 
-|  Mode  |         Short Description of Fnuctionality            |  Arguments  |
+|  Mode  |         Short Description of Functionality            |  Arguments  |
 |:------:|:-----------------------------------------------------:|:-----------:|
 | `help` | Offers help for individual modes and MHIT as a whole. |  Mode Name  |
 | `version` | Displays version and compile information for MHIT. |    NONE     |
 | `info` | Dumps information about the given file to the terminal. | Image File|
 | `cons` | Draws a sprite to the terminal with ANSI control codes. |Sprite File|
-| `convert` |  Creates an MHS file, using two source BMP files.  | Source BMPs |
+| `convert` |   Converts between MHS and BMP files.   | Source MHS or BMP pair |
 | `vis-test` | Runs one of five SDL tests, supplied as a letter. | Test Letter |
 | `display` | Draws the given sprite in an interactive SDL window.| Sprite File|
 
@@ -66,12 +66,24 @@ line being replaced by the post-program shell input.
 
 ## `convert` Mode
 
-Being an image tool that supports a custom format, this mode is a necessity,
-though it currently can only convert two Windows bitmaps *to* a single MHS file.
-The two supplied bitmap files are, in order, a sixteen-gray "skeleton" and an,
-at maximum, sixteen-by-sixteen pixel palette reference. These two images are
-read together to create an MHS sprite. **This mode is the *first* of MHIT's two
-"primary modes."**
+Being an image tool that supports a custom format, this mode is a necessity. It,
+as the name suggests, converts to and from `MHS` files, with Windows BMP files
+being the other format it works with.
+
+When converting *to* an `MHS` file, two `BMP` files are supplied after the mode
+name. The two supplied bitmap files are, in order, a sixteen-gray "skeleton" and
+an, at maximum, sixteen-by-sixteen pixel palette reference. These two images are
+read together to create an MHS sprite.
+
+When converting *from* and `MHS` file, a sprite file is supplied followed by
+either a 0 or a 1. The two numbers have the following effects:
+- A "0" puts the conversion into "skeleton and palettes" mode, which outputs two
+  `BMP` files that can be re-fed into the other conversion method to recreate
+  the original `MHS` file.
+- A "1" puts the conversion into "colored" mode, where `MHIT` outputs a colored
+  image for each palette within the original `MHS`.
+
+**This mode is the *first* of MHIT's two "primary modes."**
 
 ## `vis-test` Mode
 
@@ -104,15 +116,16 @@ within the mode's help text, and are reproduced below:
 |   `[`   |      Decrement the displayed palette number       |
 |   `.`   |           Increase sprite display scale           |
 |   `,`   |           Decrease sprite display scale           |
+|   `;`   | Increase scale of info text in upper left corner  |
+|   `'`   | Decrease scale of info text in upper left corner  |
 |  `TAB`  |          Reset display to default values          |
 
 ## Roadmap
 
-### Pressing:
+### Constant:
 
 - Bugfixes, especially around memory allocations.
 - Optimizations where applicable
-- Conversion from MHS to Windows Bitmap
 
 ### Will Be Added Soon™:
 

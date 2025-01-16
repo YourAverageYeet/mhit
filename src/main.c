@@ -20,7 +20,7 @@
 #include "incl/sdl-code/disp-mode/mhps-disp.h"
 
 #define M_MAJOR_VERSION 1
-#define M_MINOR_VERSION 0
+#define M_MINOR_VERSION 2
 #define M_PATCH_VERSION 0
 
 const char* modes[] = {
@@ -57,6 +57,9 @@ file.\nPlease limit your path to %d characters.\n-> ";
 const char* askName2 = " %[^\n]s";
 
 char savePath[1029];
+
+const char* badConvert = "\nConvert only takes a \"0\" or a \"1\" when \
+converting from an MHS file!\n";
 
 char* getFileExtension(char* filePath){
     char* part = strtok(filePath, ".");
@@ -102,29 +105,44 @@ int main(int argc, char* argv[]){
                 fclose(fileStream);
                 break;
             case(2):
-                checkFileExists(argv[2]);
-                FILE* skelStream = fopen(argv[2], "rb");
-                checkFileExists(argv[3]);
-                FILE* palsStream = fopen(argv[3], "rb");
-                bmpRawFile_t* skel = createRawBMP(skelStream);
-                bmpRawFile_t* pals = createRawBMP(palsStream);
-                pSpr_t* conv = rawBMPsToSprite(skel, pals);
-                fclose(skelStream);
-                fclose(palsStream);
-                puts("\nCreated the following data:");
-                displaySpriteData(conv);
-                printf("%s", askSave);
-                char c = (char)getchar();
-                if(c != 'y' && c != 'Y'){
-                    puts("\nExiting...");
+                if(strstr(argv[2], ".mhs") == NULL){
+                    checkFileExists(argv[2]);
+                    FILE* skelStream = fopen(argv[2], "rb");
+                    checkFileExists(argv[3]);
+                    FILE* palsStream = fopen(argv[3], "rb");
+                    bmpRawFile_t* skel = createRawBMP(skelStream);
+                    bmpRawFile_t* pals = createRawBMP(palsStream);
+                    pSpr_t* conv = rawBMPsToSprite(skel, pals);
+                    fclose(skelStream);
+                    fclose(palsStream);
+                    puts("\nCreated the following data:");
+                    displaySpriteData(conv);
+                    printf("%s", askSave);
+                    char c = (char)getchar();
+                    if(c != 'y' && c != 'Y'){
+                        puts("\nExiting...");
+                        destroySpriteObj(conv);
+                        return 0;
+                    }
+                    printf(askName1, ((sizeof(savePath) / sizeof(savePath[0]))-\
+                                        5));
+                    scanf(askName2, &savePath);
+                    spriteToFile(conv, savePath);
                     destroySpriteObj(conv);
-                    return 0;
+                } else {
+                    puts(argv[2]);
+                    checkFileExists(argv[2]);
+                    uint8_t mode = atoi(argv[3]);
+                    if(mode >= 2){
+                        errorOut(badConvert, EC_invalMode);
+                    }
+                    FILE* sprFile = fopen(argv[2], "rb");
+                    pSpr_t* spr = genSpriteObj(sprFile);
+                    fclose(sprFile);
+                    spriteToBMPs(spr, mode);
+                    destroySpriteObj(spr);
+                    puts("Exiting main...");
                 }
-                printf(askName1, ((sizeof(savePath) / sizeof(savePath[0])) -\
-                                    5));
-                scanf(askName2, &savePath);
-                spriteToFile(conv, savePath);
-                destroySpriteObj(conv);
                 break;
             case(3):
                 if(argv[2]){
@@ -167,6 +185,7 @@ int main(int argc, char* argv[]){
                 displayMHPS(visualizer, argv[2]);
                 puts("Exiting SDL...");
                 destroySDLVisualizer(visualizer);
+                SDL_Quit();
                 break;
             default:
                 errorOut(switchDef, EC_switchDef);

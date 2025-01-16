@@ -45,10 +45,10 @@ argbColor_t longToColor(uint32_t value){
 
 uint32_t colorToLong(argbColor_t color){
     uint32_t value = 0;
-    value |= ((uint32_t)color.blue) << 24;
-    value |= ((uint32_t)color.green) << 16;
-    value |= ((uint16_t)color.red) << 8;
-    value |= color.alpha;
+    value |= ((uint32_t)color.alpha) << 24;
+    value |= ((uint32_t)color.red) << 16;
+    value |= ((uint16_t)color.green) << 8;
+    value |= color.blue;
     return value;
 }
 
@@ -210,8 +210,8 @@ bmpRawFile_t* createRawBMP(FILE* inputFile){
     return newRaw;
 }
 
-int checkBMPColorSpace(bmpRawFile_t* rawBMP, uint32_t style){
-    if(rawBMP->deviceHeader->colorSpace == style){
+int checkBMPColorSpace(bmpRawFile_t* rawBMP, uint32_t space){
+    if(rawBMP->deviceHeader->colorSpace == space){
         return TRUE;
     } else {
         return FALSE;
@@ -265,19 +265,19 @@ void bmpDetailsOut(bmpRawFile_t* bmp){
     puts("");
     printf("Color Space:\t%" PRIu32 "\t", bmp->deviceHeader->colorSpace);
     switch(bmp->deviceHeader->colorSpace){
-        case(STYLE_SRGB):
+        case(SPACE_SRGB):
             puts("(sRGB)");
             break;
-        case(STYLE_WINDOWS):
+        case(SPACE_WINDOWS):
             puts("(Windows Colorspace)");
             break;
-        case(STYLE_CALIBRATED):
+        case(SPACE_CALIBRATED):
             puts("(Calibrated)");
             break;
-        case(STYLE_LINKED):
+        case(SPACE_LINKED):
             puts("(Linked ICC Profile)");
             break;
-        case(STYLE_EMBEDED):
+        case(SPACE_EMBEDED):
             puts("(Embeded ICC Profile)");
             break;
         default:
@@ -326,4 +326,119 @@ void bmpDetailsOut(bmpRawFile_t* bmp){
         }
         puts("");
     }
+}
+
+bmpRawFile_t* genEmptyRawBMP(void){
+    ciePoint_t zeroPoint = {0, 0, 0};
+    triplePoint_t zeroTriple = {zeroPoint, zeroPoint, zeroPoint};
+    bmpRawFile_t* emptyRaw = malloc(sizeof(bmpRawFile_t));
+    uint32_t DIBSize = (uint32_t)sizeof(dibHead_t);
+    emptyRaw->colorTable = NULL;
+    emptyRaw->iccProfile = NULL;
+    emptyRaw->fileHeader = malloc(sizeof(bmpHead_t));
+    emptyRaw->fileHeader->signature[0] = 'B';
+    emptyRaw->fileHeader->signature[1] = 'M';
+    emptyRaw->fileHeader->offToPixels = ((uint32_t)sizeof(bmpHead_t) + DIBSize);
+    emptyRaw->fileHeader->offToPixels -= 2;
+    emptyRaw->deviceHeader = malloc(DIBSize);
+    emptyRaw->deviceHeader->headerSize = DIBSize;
+    emptyRaw->deviceHeader->planeCount = 1;
+    emptyRaw->deviceHeader->bitsPerPixel = 32;
+    emptyRaw->deviceHeader->compression = BI_BITFIELDS;
+    emptyRaw->deviceHeader->pixPerMeterX = 2835;
+    emptyRaw->deviceHeader->pixPerMeterY = 2835;
+    emptyRaw->deviceHeader->colorTableSize = 0;
+    emptyRaw->deviceHeader->numImportant = 0;
+    emptyRaw->deviceHeader->bitmaskRed = 0x00FF0000;
+    emptyRaw->deviceHeader->bitmaskGreen = 0x0000FF00;
+    emptyRaw->deviceHeader->bitmaskBlue = 0x000000FF;
+    emptyRaw->deviceHeader->bitmaskAlpha = 0xFF000000;
+    emptyRaw->deviceHeader->colorSpace = SPACE_SRGB;
+    emptyRaw->deviceHeader->colorEndpoints = zeroTriple;
+    emptyRaw->deviceHeader->gammaRed = 0;
+    emptyRaw->deviceHeader->gammaGreen = 0;
+    emptyRaw->deviceHeader->gammaBlue = 0;
+    emptyRaw->deviceHeader->renderIntent = LCS_GM_GRAPHICS;
+    emptyRaw->deviceHeader->iccData = 0;
+    emptyRaw->deviceHeader->iccSize = 0;
+    emptyRaw->pixelArray = NULL; // Until otherwise...
+    return emptyRaw;
+}
+
+void saveBMPFile(bmpRawFile_t* bmp, char* name){
+    FILE* outFile = fopen(name, "wb");
+    if(!outFile){
+        printf("Error code: %d\n", errno);
+        perror("Bugged");
+    }
+    // BMP File Header
+    puts("Writing file header");
+    fwrite(bmp->fileHeader->signature, 1, 2, outFile);
+    fwrite(&bmp->fileHeader->fileSize, 4, 1, outFile);
+    fwrite(&bmp->fileHeader->reserved1, 2, 1, outFile);
+    fwrite(&bmp->fileHeader->reserved2, 2, 1, outFile);
+    fwrite(&bmp->fileHeader->offToPixels, 4, 1, outFile);
+    // DIB Header
+    puts("Writing DIB header");
+    fwrite(&bmp->deviceHeader->headerSize, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->imageWidth, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->imageHeight, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->planeCount, 2, 1, outFile);
+    fwrite(&bmp->deviceHeader->bitsPerPixel, 2, 1, outFile);
+    fwrite(&bmp->deviceHeader->compression, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->imageSize, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->pixPerMeterX, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->pixPerMeterY, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->colorTableSize, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->numImportant, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->bitmaskRed, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->bitmaskGreen, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->bitmaskBlue, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->bitmaskAlpha, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->colorSpace, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->colorEndpoints.cie_red.coord_x, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->colorEndpoints.cie_red.coord_y, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->colorEndpoints.cie_red.coord_z, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->colorEndpoints.cie_green.coord_x, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->colorEndpoints.cie_green.coord_y, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->colorEndpoints.cie_green.coord_z, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->colorEndpoints.cie_blue.coord_x, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->colorEndpoints.cie_blue.coord_y, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->colorEndpoints.cie_blue.coord_z, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->gammaRed, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->gammaGreen, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->gammaBlue, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->renderIntent, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->iccData, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->iccSize, 4, 1, outFile);
+    fwrite(&bmp->deviceHeader->reserved, 4, 1, outFile);
+    // Possible Color Table
+    if(bmp->colorTable != NULL){
+        puts("Writing color table");
+        for(uint32_t c = 0; c < bmp->deviceHeader->colorTableSize; c++){
+            uint32_t color = colorToLong(bmp->colorTable[c]);
+            fwrite(&color, 4, 1, outFile);
+        }
+    }
+    // Pixel Array
+    puts("Writing pixel array");
+    size_t aiW = abs(bmp->deviceHeader->imageWidth);
+    size_t aiH = abs(bmp->deviceHeader->imageHeight);
+    size_t size = aiW * aiH;
+    printf("Width %zu\tHeight %zu\n", aiW, aiH);
+    printf("size: %zu\n", size);
+    size *= 4;
+    size_t written = fwrite(bmp->pixelArray, 1, size, outFile);
+    if(written != size){
+        printf("Error: expected %zu, got %zu\n", size, written);
+        perror("Bugged");
+    }
+    // Possible ICC Data
+    if(bmp->iccProfile != NULL){
+        puts("Writing ICC profile");
+        fwrite(bmp->iccProfile, 1, bmp->deviceHeader->iccSize, outFile);
+    }
+    printf("BMP file \"%s\" written to disk.\n", name);
+    fclose(outFile);
+    
 }

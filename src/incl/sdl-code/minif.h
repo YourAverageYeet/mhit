@@ -138,8 +138,8 @@ extern char* minifTest7;    ///< Test string 7
 
 // Functions
 
-void drawMinifCharacter(vis_t* vis, objPos_t charPos, char c);
+void drawMinifCharacter(vis_t* vis, objPos_t charPos, char c, uint8_t scale);
 
-void minifString(vis_t* vis, objPos_t startPos, char* str);
+void minifString(vis_t* vis, objPos_t startPos, char* str, uint8_t scale);
 
 #endif // MINIF_H_INCLUDED

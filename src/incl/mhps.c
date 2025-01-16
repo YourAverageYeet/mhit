@@ -17,12 +17,17 @@ const int EC_mhpsMagic = 0x5BADF11E; // S(prite) Bad File
 const char* tooManyColors = "Supplied palettes image has more than 16 colors \
 per row. Exiting...";
 
-const int EC_tooManyColors = 0x22C01025; // 22 Colors
+const int EC_tooManyColors = 0x22C01025; // Too (Many) Colors
 
 const char* tooManyPals = "Supplied palettes image has to many rows. \
 Exiting...";
 
 const int EC_tooManyPals = 0x22220BAD; // Too Bad
+
+const char* invalBMPMode = "Invalid mode supplied to spriteToBMPs. \
+Exiting...\n";
+
+const int EC_invalBMPMode = 0xBAD30DE; // Bad Mode (M rotated into 3)
 
 // MHPS Functions
 
@@ -88,8 +93,6 @@ void displaySpriteData(pSpr_t* spriteObj){
         uint8_t colorIndex = spriteObj->sprData[i];
         if(colorIndex == 0xFF){
             printf("%c ", ' ');
-        } else if(colorIndex == 0xFE){
-            printf("%c ", '#');
         } else {
             printf("%X ", colorIndex);
         }
@@ -190,7 +193,7 @@ pSpr_t* rawBMPsToSprite(bmpRawFile_t* skeleton, bmpRawFile_t* palettes){
     uint64_t sprArea = (uint64_t)sprObj->info->sprWidth *\
         (uint64_t)sprObj->info->sprHeight;
     for(uint64_t i = 0; i < sprArea; i++){
-        sprObj->sprData[i] = 0xFE;
+        sprObj->sprData[i] = 0xFF;
     }
     double diff_x = (double)sprObj->info->sprWidth -\
         (double)skeleton->deviceHeader->imageWidth;
@@ -239,12 +242,6 @@ pSpr_t* rawBMPsToSprite(bmpRawFile_t* skeleton, bmpRawFile_t* palettes){
 }
 
 void spriteToFile(pSpr_t* sprite, char* name){
-    uint64_t sprArea = sprite->info->sprWidth * sprite->info->sprHeight;
-    for(uint64_t p = 0; p < sprArea; p++){
-        if(sprite->sprData[p] == 0xFE){
-            sprite->sprData[p] = 0xFF;
-        }
-    }
     char lastFour[5] = {0, 0, 0, 0, 0};
     int strEnd = strlen(name);
     lastFour[3] = name[strEnd-1];
@@ -274,4 +271,97 @@ void spriteToFile(pSpr_t* sprite, char* name){
     fwrite(sprite->palData, 1, writeBytes, sprFile);
     printf("\nData written to %s\n", name);
     fclose(sprFile);
+}
+
+void spriteToBMPs(pSpr_t* sprite, int mode){
+    if(mode > 1){
+        errorOut(invalBMPMode, EC_invalBMPMode);
+    } else if(mode) {
+        uint64_t iW = sprite->info->sprWidth;
+        uint64_t iH = sprite->info->sprHeight;
+        uint32_t imgSize = iW * iH;
+        uint32_t fSizeB = imgSize * 4;
+        char outName[14] = "paletteNN.bmp";
+        for(uint8_t p = 0; p < sprite->info->palCount; p++){
+            bmpRawFile_t* paletted = genEmptyRawBMP();
+            paletted->deviceHeader->imageWidth = (int32_t)iW;
+            paletted->deviceHeader->imageHeight = -(int32_t)iH;
+            paletted->deviceHeader->imageSize = imgSize * 4;
+            paletted->fileHeader->fileSize = paletted->fileHeader->offToPixels;
+            paletted->fileHeader->fileSize += fSizeB;
+            paletted->pixelArray = malloc(imgSize * sizeof(uint32_t));
+            memset(paletted->pixelArray, 0, (imgSize * 4));
+            printf("Allocated %u bytes\t(%u pixels)\n", (imgSize * 4),
+                    imgSize);
+            uint16_t palOff = sprite->info->palSize * p * 3;
+            for(uint32_t i = 0; i < imgSize; i++){
+                uint8_t read = sprite->sprData[i];
+                if(read != 0xFF){
+                    read &= 0x0F;
+                    uint16_t colorOff = palOff + (read * 3);
+                    argbColor_t color = {0, 0, 0, 0};
+                    color.alpha = 0xFF;
+                    color.red = sprite->palData[colorOff];
+                    color.green = sprite->palData[colorOff + 1];
+                    color.blue = sprite->palData[colorOff + 2];
+                    uint32_t write = colorToLong(color);
+                    paletted->pixelArray[i] = write;
+                } else {
+                    paletted->pixelArray[i] = 0x00000000;
+                }
+            }
+            sprintf(outName, "palette%02hhu.bmp", (p + 1));
+            saveBMPFile(paletted, outName);
+            destroyRawBMP(paletted);
+        }
+    } else {
+        bmpRawFile_t* skelRaw = genEmptyRawBMP();
+        skelRaw->deviceHeader->imageWidth = (int32_t)sprite->info->sprWidth;
+        skelRaw->deviceHeader->imageHeight = -(int32_t)sprite->info->sprHeight;
+        uint32_t imgSize = sprite->info->sprWidth * sprite->info->sprHeight;
+        skelRaw->deviceHeader->imageSize = imgSize * 4;
+        uint32_t fSize = skelRaw->fileHeader->offToPixels + (imgSize * 4);
+        skelRaw->fileHeader->fileSize = fSize;
+        skelRaw->pixelArray = malloc(imgSize * sizeof(uint32_t));
+        memset(skelRaw->pixelArray, 0, (imgSize * 4));
+        printf("Allocated %u bytes\t(%u pixels)\n", (imgSize * 4), imgSize);
+        for(size_t i = 0; i < imgSize; i++){
+            uint8_t read = sprite->sprData[i];
+            uint32_t written = 0;
+            if(read != 0xFF){
+                for(int s = 0; s < 8; s++){
+                    written |= (read << (4 * s));
+                }
+                written |= 0xFF000000;
+                skelRaw->pixelArray[i] = written;
+            } else {
+                skelRaw->pixelArray[i] = written;
+            }
+        }
+        saveBMPFile(skelRaw, "skeleton.bmp");
+        destroyRawBMP(skelRaw);
+        bmpRawFile_t* palsRaw = genEmptyRawBMP();
+        palsRaw->deviceHeader->imageWidth = (int32_t)sprite->info->palSize;
+        palsRaw->deviceHeader->imageHeight = -(int32_t)sprite->info->palCount;
+        imgSize = sprite->info->palSize * sprite->info->palCount;
+        palsRaw->deviceHeader->imageSize = imgSize * 4;
+        fSize = palsRaw->fileHeader->offToPixels + (imgSize * 4);
+        palsRaw->fileHeader->fileSize = fSize;
+        palsRaw->pixelArray = malloc(imgSize * sizeof(uint32_t));
+        memset(palsRaw->pixelArray, 0, (imgSize * 4));
+        printf("Allocated %u bytes\t(%u pixels)\n", (imgSize * 4), imgSize);
+        for(size_t i = 0; i < imgSize; i++){
+            size_t ci = i * 3;
+            argbColor_t wColor = {0, 0, 0, 0};
+            wColor.alpha = 0xFF;
+            wColor.red = sprite->palData[ci];
+            wColor.green = sprite->palData[ci + 1];
+            wColor.blue = sprite->palData[ci + 2];
+            uint32_t written = colorToLong(wColor);
+            palsRaw->pixelArray[i] = written;
+        }
+        saveBMPFile(palsRaw, "palettes.bmp");
+        destroyRawBMP(palsRaw);
+    }
+    puts("Sprite Converted!");
 }

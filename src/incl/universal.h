@@ -23,6 +23,7 @@
 #include <string.h>
 #include <inttypes.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 // Self-written includes
 

@@ -52,7 +52,7 @@ char* minifTest7 = "`~!@#$%^&*()-_=+,<.>/?;:'\"[{]}\\|";
 
 // Functions
 
-void drawMinifCharacter(vis_t* vis, objPos_t charPos, char c){
+void drawMinifCharacter(vis_t* vis, objPos_t charPos, char c, uint8_t scale){
     if(c < 0x20 || c >= 0x7F){
         errorOut(invalChar, EC_invalChar);
     }
@@ -85,23 +85,32 @@ void drawMinifCharacter(vis_t* vis, objPos_t charPos, char c){
                 SDL_SetRenderDrawColor(vis->rend, 0x00, 0x00, 0x00,
                     SDL_ALPHA_OPAQUE);
             }
-            SDL_RenderDrawPoint(vis->rend, (charPos.x_pos + col),
-                (charPos.y_pos + row));
+            if(scale == 1){
+                SDL_RenderDrawPoint(vis->rend, (charPos.x_pos + col),
+                    (charPos.y_pos + row));
+            } else {
+                int x = charPos.x_pos + (col * scale);
+                int y = charPos.y_pos + (row * scale);
+                SDL_Rect r = {x, y, scale, scale};
+                SDL_RenderFillRect(vis->rend, &r);
+            }
             bits <<= 1;
         }
     }
 }
 
-void minifString(vis_t* vis, objPos_t startPos, char* str){
+void minifString(vis_t* vis, objPos_t startPos, char* str, uint8_t scale){
     int len = strlen(str);
     SDL_SetRenderDrawColor(vis->rend, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
-    int x = startPos.x_pos - 1;
-    int y = startPos.y_pos - 1;
+    int x = startPos.x_pos - scale;
+    int y = startPos.y_pos - scale;
     int w = (len * 3) + (len - 1) + 2;
-    SDL_Rect box = {x, y, w, 7};
+    w *= scale;
+    int l = 7 * scale;
+    SDL_Rect box = {x, y, w, l};
     SDL_RenderFillRect(vis->rend, &box);
     for(int i = 0; i < len; i++){
-        objPos_t newPos = {(startPos.x_pos + (4 * i)), startPos.y_pos};
-        drawMinifCharacter(vis, newPos, str[i]);
+        objPos_t newPos = {(startPos.x_pos + (4 * i * scale)), startPos.y_pos};
+        drawMinifCharacter(vis, newPos, str[i], scale);
     }
 }

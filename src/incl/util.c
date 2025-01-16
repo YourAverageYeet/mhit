@@ -90,12 +90,18 @@ Supported file types are the following:\n\
 
 #define CONVERT_HELP "\n\
 \tHelp Text for: CONVERT\n\
-\"convert\" is used to create a single MHS file from two specially formatted\n\
-BMP files. The \"skeleton\" BMP is a 16-color greyscale image, while the\n\
-\"palettes\" image is, at maximum, a 16x16 image, where each row is a palette\n\
-in the final sprite. If you decide to save the data, the program will prompt\n\
-you for a path relative to the current working directory.\n\n\
-\tUSAGE: ./mhit convert PATH_TO_SKELETON PATH_TO_PALETTES\n"
+\"convert\" is used to either create or break apart a single MHS file.\n\
+Creation requires two specially formatted BMP files. The \"skeleton\" BMP is\n\
+a 16-color greyscale image, while the \"palettes\" image is, at maximum, a\n\
+16x16 image, where each row is a palette in the final sprite. If you decide\n\
+to save the data, the program will prompt you for a path relative to the\n\
+current working directory.\n\n\
+When \"breaking apart\" an MHS file, the MHS to be broken apart is supplied\n\
+followed by either a 0 or a 1. A 0 uses the MHS file to recreate the\n\
+skeleton and palette BMPs used to create it while a 1 produces up to sixteen\n\
+colored images, one for each palette.\n\n\
+\tUSAGE:  ./mhit convert PATH_TO_SKELETON PATH_TO_PALETTES\n\
+\t\t./mhit convert PATH_TO_SPRITE OPERATION_MODE\n"
 
 #define HELP_TEXT_2 "\n\
 Nice try, very funny; use \"help\" alone for what you're tying to do.\n"
@@ -132,6 +138,8 @@ interactive window. The controls for the window are as follows:\n\
 \t\" DOWN\" - Shift sprite down by one unit\n\
 \t\"  ]  \" - Increment palette number\n\
 \t\"  [  \" - Decrement palette number\n\
+\t\"  ;  \" - Increment scale of info text\n\
+\t\"  '  \" - Decrement scale of info text\n\
 \t\"  .  \" - Increase sprite scale\n\
 \t\"  ,  \" - Decrease sprite scale\n\
 \t\" TAB \" - Reset sprite display\n\n\

@@ -14,6 +14,9 @@
 #include "universal.h"
 #include "bmp.h"
 
+#define MODE_SKELPAL 0
+#define MODE_COLORED 1
+
 /**
  * @brief The magic number for MHPS files; should be a lowercase `mhps`.
  * 
@@ -115,5 +118,13 @@ pSpr_t* rawBMPsToSprite(bmpRawFile_t* skeleton, bmpRawFile_t* palettes);
  * @param name The path of the file to write.
  */
 void spriteToFile(pSpr_t* sprite, char* name);
+
+/**
+ * @brief Converts a given sprite to a set of bitmap files.
+ * 
+ * @param sprite The spite to convert
+ * @param mode The operation mode
+ */
+void spriteToBMPs(pSpr_t* sprite, int mode);
 
 #endif //MHPS_H_INCLUDED
