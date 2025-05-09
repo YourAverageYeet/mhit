@@ -34,7 +34,8 @@ const int EC_invalBMPMode = 0xBAD30DE; // Bad Mode (M rotated into 3)
 void checkFileSig_mhps(FILE* inputFile){
     fseek(inputFile, 0, SEEK_SET);
     uint8_t magic_buff[4] = {0, 0, 0, 0};
-    fread(&magic_buff, 1, 4, inputFile);
+    int read = fread(&magic_buff, 1, 4, inputFile);
+    readCheck(read, 4, "checkFileSig_mhps", inputFile);
     if(memcmp(magic_buff, mhps_magic, 4)){
         errorOut(mhpsMagic, EC_mhpsMagic);
     }
@@ -45,7 +46,8 @@ sprInfo_t* getSpriteInfo(FILE* inputFile){
     sprInfo_t* newInfo = malloc(sizeof(sprInfo_t));
     uint8_t infoVals[4] = {0x00, 0x00, 0x00, 0x00};
     fseek(inputFile, 4, SEEK_SET);
-    fread(infoVals, 1, 4, inputFile);
+    int read = fread(infoVals, 1, 4, inputFile);
+    readCheck(read, 4, "getSpriteInfo", inputFile);
     newInfo->version = infoVals[0];
     newInfo->palCount = ((infoVals[1] & 0xF0) >> 4) + 1;
     newInfo->palSize = (infoVals[1] & 0x0F) + 1;
@@ -66,8 +68,10 @@ pSpr_t* genSpriteObj(FILE* inputFile){
     uint16_t palSize = newSprite->info->palCount * newSprite->info->palSize;
     uint8_t* sprDataPtr = malloc(sprSize);
     uint8_t* palDataPtr = malloc(palSize * 3);
-    fread(sprDataPtr, 1, sprSize, inputFile);
-    fread(palDataPtr, 1, (palSize * 3), inputFile);
+    int read = fread(sprDataPtr, 1, sprSize, inputFile);
+    readCheck(read, sprSize, "genSpriteObj", inputFile);
+    read = fread(palDataPtr, 1, (palSize * 3), inputFile);
+    readCheck(read, (palSize * 3), "genSpriteObj", inputFile);
     newSprite->sprData = sprDataPtr;
     newSprite->palData = palDataPtr;
     return newSprite;
@@ -82,7 +86,7 @@ void destroySpriteObj(pSpr_t* spriteObj){
 
 void displaySpriteData(pSpr_t* spriteObj){
     printf("\nSprite Version:\t%" PRId8, spriteObj->info->version);
-    printf("\n\nSprite Bounds:\t%" PRId64 " by %" PRId64 " pixels",\
+    printf("\n\nSprite Bounds:\t%" PRId16 " by %" PRId16 " pixels",\
                 spriteObj->info->sprWidth, spriteObj->info->sprHeight);
     puts("\nPixel Color Indices:");
     int spriteSize = spriteObj->info->sprWidth * spriteObj->info->sprHeight;
@@ -281,7 +285,7 @@ void spriteToBMPs(pSpr_t* sprite, int mode){
         uint64_t iH = sprite->info->sprHeight;
         uint32_t imgSize = iW * iH;
         uint32_t fSizeB = imgSize * 4;
-        char outName[14] = "paletteNN.bmp";
+        char outName[15] = "paletteNN.bmp";
         for(uint8_t p = 0; p < sprite->info->palCount; p++){
             bmpRawFile_t* paletted = genEmptyRawBMP();
             paletted->deviceHeader->imageWidth = (int32_t)iW;

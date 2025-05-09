@@ -55,7 +55,8 @@ uint32_t colorToLong(argbColor_t color){
 void checkBMPFile(FILE* inputFile){
     fseek(inputFile, 0, SEEK_SET);
     char signature[3] = {0x00, 0x00, 0x00};
-    fread(&signature, 1, 2, inputFile);
+    int read = fread(&signature, 1, 2, inputFile);
+    readCheck(read, 2, "checkBMPFile", inputFile);
     if(strcmp(signature, validSig)){
         errorOut(notBMP, EC_notBMP);
     }
@@ -67,7 +68,8 @@ bmpHead_t* readBMPHeader(FILE* inputFile){
     int headerSize = sizeof(bmpHead_t) / 2;
     uint16_t* wordBuff = malloc(headerSize * sizeof(uint16_t));
     fseek(inputFile, 0, SEEK_SET);
-    fread(wordBuff, sizeof(uint16_t), headerSize, inputFile);
+    int read = fread(wordBuff, sizeof(uint16_t), headerSize, inputFile);
+    readCheck(read, headerSize, "readBMPHeader", inputFile);
     newHeader->signature[0] = (uint8_t)((wordBuff[0] & 0xFF00) >> 8);
     newHeader->signature[1] = (uint8_t)(wordBuff[0] & 0xFF);
     uint32_t tmp = ((uint32_t)wordBuff[2] << 16) | wordBuff[1];
@@ -92,7 +94,8 @@ triplePoint_t readCIETriple(FILE* inputFile){
     }
     int32_t* colorCoords = malloc(sizeof(int32_t) * 9);
     triplePoint_t coords = {0};
-    fread(colorCoords, sizeof(int32_t), 9, inputFile);
+    int read = fread(colorCoords, sizeof(int32_t), 9, inputFile);
+    readCheck(read, 9, "readCIETriple", inputFile);
     coords.cie_red.coord_x = colorCoords[0];
     coords.cie_red.coord_y = colorCoords[1];
     coords.cie_red.coord_z = colorCoords[2];
@@ -118,14 +121,16 @@ dibHead_t* readDIBHeader(FILE* inputFile){
     }
     fseek(inputFile, 14, SEEK_SET);
     uint32_t headSize = 0;
-    fread(&headSize, sizeof(uint32_t), 1, inputFile);
+    int read = fread(&headSize, sizeof(uint32_t), 1, inputFile);
+    readCheck(read, 1, "readDIBHeader", inputFile);
     if(headSize != 0x7C){
         errorOut(noBMPV5, EC_noBMPV5);
     }
     dibHead_t* newDIB = malloc(sizeof(dibHead_t));
     newDIB->headerSize = headSize;
     uint32_t* longBuff = malloc(sizeof(uint32_t) * 14);
-    fread(longBuff, sizeof(uint32_t), 14, inputFile);
+    read = fread(longBuff, sizeof(uint32_t), 14, inputFile);
+    readCheck(read, 14, "readDIBHeader", inputFile);
     newDIB->imageWidth = (int32_t)longBuff[0];
     newDIB->imageHeight = (int32_t)longBuff[1];
     newDIB->planeCount = (uint16_t)(longBuff[2] & 0xFFFF);
@@ -142,7 +147,8 @@ dibHead_t* readDIBHeader(FILE* inputFile){
     newDIB->bitmaskAlpha = longBuff[12];
     newDIB->colorSpace = longBuff[13];
     newDIB->colorEndpoints = readCIETriple(inputFile);
-    fread(longBuff, sizeof(uint32_t), 6, inputFile);
+    read = fread(longBuff, sizeof(uint32_t), 6, inputFile);
+    readCheck(read, 6, "readDIBHeader", inputFile);
     newDIB->gammaRed = longBuff[0];
     newDIB->gammaGreen = longBuff[1];
     newDIB->gammaBlue = longBuff[2];
@@ -187,7 +193,8 @@ bmpRawFile_t* createRawBMP(FILE* inputFile){
     for(int r = (iH - 1); r >= 0; r--){
         int offset = picOff + (r * iW * sizeof(uint32_t));
         fseek(inputFile, offset, SEEK_SET);
-        fread(rowBuff, sizeof(uint32_t), iW, inputFile);
+        int read = fread(rowBuff, sizeof(uint32_t), iW, inputFile);
+        readCheck(read, iW, "createRawBMP", inputFile);
         for(int c = 0; c < iW; c++){
             int pixelOff = ((iH - 1 - r) * iW) + c;
             pix[pixelOff] = rowBuff[c];
@@ -198,7 +205,9 @@ bmpRawFile_t* createRawBMP(FILE* inputFile){
     if(newRaw->deviceHeader->iccData){
         uint8_t* icc = malloc(newRaw->deviceHeader->iccSize);
         fseek(inputFile, (14 + newRaw->deviceHeader->iccData), SEEK_SET);
-        fread(icc, 1, newRaw->deviceHeader->iccSize, inputFile);
+        int read = fread(icc, 1, newRaw->deviceHeader->iccSize, inputFile);
+        readCheck(read, newRaw->deviceHeader->iccSize, "createRawBMP",
+                    inputFile);
         newRaw->iccProfile = icc;
         puts("ICC Data Saved");
     } else {

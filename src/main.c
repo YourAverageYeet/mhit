@@ -17,6 +17,7 @@
 #include "incl/sdl-code/base-sdl.h"
 #include "incl/sdl-code/minif.h"
 #include "incl/sdl-code/sdl-test.h"
+
 #include "incl/sdl-code/disp-mode/mhps-disp.h"
 
 #define M_MAJOR_VERSION 1
@@ -54,7 +55,7 @@ const char* askSave = "Would you like to save this data? [Y/N]\n-> ";
 const char* askName1 = "\nPlease enter the path to where you want to save this \
 file.\nPlease limit your path to %d characters.\n-> ";
 
-const char* askName2 = " %[^\n]s";
+const char* askName2 = " %[^\n]";
 
 char savePath[1029];
 
@@ -126,7 +127,8 @@ int main(int argc, char* argv[]){
                     }
                     printf(askName1, ((sizeof(savePath) / sizeof(savePath[0]))-\
                                         5));
-                    scanf(askName2, &savePath);
+                    int scan = scanf(askName2, &savePath);
+                    scanCheck(scan);
                     spriteToFile(conv, savePath);
                     destroySpriteObj(conv);
                 } else {

@@ -115,4 +115,22 @@ int checkArrayFull_byte(uint8_t* array, uint8_t value, int size);
  */
 void checkIfDirectory(char* path);
 
+/**
+ * @brief Checks if a scanf() call completed in an expected manner and addresses
+ * the errors if present.
+ * 
+ * @param scanVal The return value of a scanf() call.
+ */
+void scanCheck(int scanVal);
+
+/**
+ * @brief Checks if a fread() call completed in an expected manner and addresses
+ * the errors if present.
+ * 
+ * @param actual The actual number of objects read (fread() return value). 
+ * @param expected The expected number of objects read ("count" in fread()).
+ * @param context The name of the function that fread was called within.
+ */
+void readCheck(size_t actual, size_t expected, char* context, FILE* stream);
+
 #endif //UNIVERSAL_H_DEFINED

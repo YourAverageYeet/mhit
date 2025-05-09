@@ -58,7 +58,8 @@ void spriteDisplay(FILE* stream, char* extension){
             pSpr_t* spr = genSpriteObj(stream);
             printf("Please pick a number between 1 and %d\t-> ",\
                     spr->info->palCount);
-            scanf("%d", &palNum);
+            int scan = scanf("%d", &palNum);
+            scanCheck(scan);
             palNum--;
             spriteToConsole(spr, palNum);
             destroySpriteObj(spr);

@@ -2,20 +2,38 @@
 
 const char* noMem = "Not enough memory error. Exiting...\n";
 
-const int EC_noMem = 0x4B1D0DA1; // Forbid day
+const int EC_noMem = 0x4B1D0DA1;    // Forbid day
 
 const char* switchDef = "Unexpected switch default reached. Exiting...\n";
 
-const int EC_switchDef = 0xBADDA1; // Bad day
+const int EC_switchDef = 0xBADDA1;  // Bad day
 
 const char* noFile = "The object \"%s\" does not exist. Exiting...\n";
 
-const int EC_noFile = 0x0BADF11E;
+const int EC_noFile = 0x0BADF11E;   // Bad File
 
 const char* notDir = "The supplied path \"%s\" is not a directory. \
 Exiting...\n";
 
-const int EC_notDir = 0xD12BAD;
+const int EC_notDir = 0xD12BAD;     // Dir Bad
+
+const char* badScan0 = "scanf() unexpectedly read 0 objects; Exiting...";
+
+const char* badScanEOF = "scanf() unexpectedly reached the end of the supplied \
+file; Exiting...";
+
+const int EC_badScan = 0xBAD5CAF;   // Bad Sca(n)f
+
+const char* badReadEOF = "fread() encountered an unexpected EOF; call context \
+was within %s().";
+
+const char* badReadError = "An error was encountered in %s() while calling \
+fread";
+
+const char* badReadUnknown = "An unknown error occured within a call to \
+fread() in %s(). How did we get here?";
+
+const int EC_badRead = 0xBAD2EAD;   // Bad Read
 
 void errorOut(const char* msg, int ec){
     fprintf(stderr, "%s", msg);
@@ -70,5 +88,27 @@ void checkIfDirectory(char* path){
     }
     if(!S_ISDIR(s.st_mode)){
         errorOut(notDir, EC_notDir);
+    }
+}
+
+void scanCheck(int scanVal){
+    if(!scanVal){
+        errorOut(badScan0, EC_badScan);
+    } else if(scanVal == EOF){
+        errorOut(badScanEOF, EC_badScan);
+    }
+}
+
+void readCheck(size_t actual, size_t expected, char* context, FILE* stream){
+    if(actual != expected){
+        if(feof(stream)){
+            fprintf(stderr, badReadEOF, context);
+        } else if(ferror(stream)){
+            fprintf(stderr, badReadError, context);
+            perror("()");
+        } else {
+            fprintf(stderr, badReadUnknown, context);
+        }
+        errorOut("Exiting...", EC_badRead);
     }
 }

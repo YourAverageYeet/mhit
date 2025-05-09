@@ -55,8 +55,8 @@ void displayMHPS(vis_t* vis, char* sprPath){
     sprName = sprName ? sprName + 1 : sprPath; 
     char* nameStr = malloc(14 + strlen(sprName));
     char* posStr = malloc(30);
-    char* palStr = malloc(25);
-    char* scaleStr = malloc(18);
+    char* palStr = malloc(27);
+    char* scaleStr = malloc(19);
     sprintf(nameStr, "Sprite Name: %s", sprName);
     objPos_t nameStrPos = {2, 2};
     objPos_t posStrPos = {2, 10};

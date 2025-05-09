@@ -38,8 +38,8 @@ typedef struct sprInfo_t {
     uint8_t version;    ///< The version of the read sprite.
     uint8_t palCount;   ///< The number of palette for this sprite.
     uint8_t palSize;    ///< The amount of colors per palette.
-    uint64_t sprWidth;  ///< The width of the sprite.
-    uint64_t sprHeight; ///< The height of the sprite.
+    uint16_t sprWidth;  ///< The width of the sprite.
+    uint16_t sprHeight; ///< The height of the sprite.
 } sprInfo_t;
 
 /**

@@ -17,7 +17,7 @@
 #include "../minif.h"
 
 /**
- * @brief Finds the offests with which to display a sprite to center it within a
+ * @brief Finds the offsets with which to display a sprite to center it within a
  * visualizer.
  * 
  * @param spr The sprite to find the offsets for
