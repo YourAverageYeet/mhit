@@ -133,4 +133,28 @@ void scanCheck(int scanVal);
  */
 void readCheck(size_t actual, size_t expected, char* context, FILE* stream);
 
+/**
+ * @brief Flips the endianness of a 16-bit number.
+ * 
+ * @param value The 16-bit number to swap.
+ * @return uint16_t The endian-swapped 16-bit number.
+ */
+uint16_t byteSwap16(uint16_t value);
+
+/**
+ * @brief Flips the endianness of a 32-bit number.
+ * 
+ * @param value The 32-bit number to swap.
+ * @return uint32_t The endian-swapped 32-bit number.
+ */
+uint32_t byteSwap32(uint32_t value);
+
+// /**
+//  * @brief Flips the endianness of a 64-bit number.
+//  * 
+//  * @param value The 64-bit number to swap.
+//  * @return uint64_t The endian-swapped 64-bit number.
+//  */
+// uint64_t byteSwap64(uint64_t value);
+
 #endif //UNIVERSAL_H_DEFINED

@@ -112,3 +112,28 @@ void readCheck(size_t actual, size_t expected, char* context, FILE* stream){
         errorOut("Exiting...", EC_badRead);
     }
 }
+
+uint16_t byteSwap16(uint16_t value){
+    uint8_t tmp = (uint8_t)(value >> 8);
+    value <<= 8;
+    value |= tmp;
+    return value;
+}
+
+uint32_t byteSwap32(uint32_t value){
+    uint16_t topHalf = (uint16_t)(value >> 16);
+    uint16_t botHalf = (uint16_t)(value & 0xFFFF);
+    value = byteSwap16(botHalf);
+    value <<= 16;
+    value |= byteSwap16(topHalf);
+    return value;
+}
+
+// uint64_t byteSwap64(uint64_t value){
+//     uint32_t topHalf = (uint32_t)(value >> 32);
+//     uint32_t botHalf = (uint32_t)(value & 0xFFFFFFFF);
+//     value = byteSwap32(botHalf);
+//     value <<= 32;
+//     value |= byteSwap32(topHalf);
+//     return value;
+// }
