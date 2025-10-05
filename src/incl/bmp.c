@@ -190,11 +190,27 @@ bmpRawFile_t* createRawBMP(FILE* inputFile){
         "\tPixel Count: %" PRIu64 "\n", iW, iH, picOff, pixCount);
     uint32_t* pix = malloc(sizeof(uint32_t) * pixCount);
     uint32_t* rowBuff = malloc(sizeof(uint32_t) * iW);
+    uint8_t pixBuff[3] = {0x00, 0x00, 0x00};
     for(int r = (iH - 1); r >= 0; r--){
-        int offset = picOff + (r * iW * sizeof(uint32_t));
-        fseek(inputFile, offset, SEEK_SET);
-        int read = fread(rowBuff, sizeof(uint32_t), iW, inputFile);
-        readCheck(read, iW, "createRawBMP", inputFile);
+        if(newRaw->deviceHeader->compression == BI_BITFIELDS){
+            int offset = picOff + (r * iW * sizeof(uint32_t));
+            fseek(inputFile, offset, SEEK_SET);
+            int read = fread(rowBuff, sizeof(uint32_t), iW, inputFile);
+            readCheck(read, iW, "createRawBMP", inputFile);
+        } else {
+            int padCount = (4 - (iW * 3) % 4) % 4;
+            for(int c = 0; c < iW; c++){
+                int offset = picOff + (r * iW * 3) + (c * 3) + (r * padCount);
+                fseek(inputFile, offset, SEEK_SET);
+                int read = fread(pixBuff, 1, 3, inputFile);
+                readCheck(read, 3, "createRawBMP", inputFile);
+                uint32_t fakePixel = 0xFF000000;
+                fakePixel += pixBuff[2] << 16;
+                fakePixel += pixBuff[1] << 8;
+                fakePixel += pixBuff[0];
+                rowBuff[c] = fakePixel;
+            }
+        }
         for(int c = 0; c < iW; c++){
             int pixelOff = ((iH - 1 - r) * iW) + c;
             pix[pixelOff] = rowBuff[c];
