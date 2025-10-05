@@ -49,4 +49,4 @@ target_compile_options(mhit
                                     -Wpedantic
 )
 
-install(TARGETS mhit RUNTIME DESTINATION bin)
+install(TARGETS mhit RUNTIME DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/bin")
