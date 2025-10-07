@@ -170,13 +170,14 @@ bmpRawFile_t* createRawBMP(FILE* inputFile){
     printf("Read %d colors...\t\t", colors);
     if(colors){
         uint32_t* cLongs = malloc(sizeof(uint32_t) * colors);
+        int read = fread(cLongs, sizeof(uint32_t), colors, inputFile);
+        readCheck(read, colors, "createRawBMP", inputFile);
         argbColor_t* colorLUT = malloc(sizeof(argbColor_t) * colors);
         for(uint32_t i = 0; i < colors; i++){
             colorLUT[i] = longToColor(cLongs[i]);
         }
         newRaw->colorTable = colorLUT;
         free(cLongs);
-        free(colorLUT);
         puts("Saved");
     } else {
         newRaw->colorTable = NULL;
