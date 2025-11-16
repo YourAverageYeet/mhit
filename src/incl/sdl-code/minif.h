@@ -138,8 +138,25 @@ extern char* minifTest7;    ///< Test string 7
 
 // Functions
 
+/**
+ * @brief Draws a single Minif character to an SDL visualizer.
+ * 
+ * @param vis The visualizer to draw to.
+ * @param charPos The position of the upper-left corner of the character.
+ * @param c The character to draw.
+ * @param scale The scale at which to draw the character.
+ */
 void drawMinifCharacter(vis_t* vis, objPos_t charPos, char c, uint8_t scale);
 
+/**
+ * @brief Draws a string to an SDL visualizer using the Minif font.
+ * 
+ * @param vis The visualizer to draw to.
+ * @param startPos The position of the upper-left corner of the first character
+ * in the string.
+ * @param str The string to draw.
+ * @param scale The scale at which to draw the character.
+ */
 void minifString(vis_t* vis, objPos_t startPos, char* str, uint8_t scale);
 
 #endif // MINIF_H_INCLUDED

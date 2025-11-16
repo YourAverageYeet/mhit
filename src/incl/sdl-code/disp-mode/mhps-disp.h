@@ -35,6 +35,12 @@ objPos_t* findCenterOffsets(pSpr_t* spr);
  */
 void drawSpriteSDL(vis_t* vis, pSpr_t* spr, int pal, int scale, objPos_t* coords);
 
+/**
+ * @brief The main SDL display loop function for viewing MHPS files.
+ * 
+ * @param vis The visualizer to use for the display.
+ * @param sprPath The file path f the sprite to be displayed.
+ */
 void displayMHPS(vis_t* vis, char* sprPath);
 
 #endif // MHPS_DISP_INCLUDED
